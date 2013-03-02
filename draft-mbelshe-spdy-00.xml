@@ -154,7 +154,7 @@
   +========+
               </artwork>
             </figure>
-            <t>Length: An unsigned 16-bit value representing the number of bytes of the data field.</t>
+            <t>Length: An unsigned 16-bit value representing the total number of bytes of the frame.</t>
 
             <t>Type: The frame type. See <xref target="FrameTypes">Frame Types</xref> for the complete list of frames.</t>
 
