@@ -405,8 +405,8 @@ Internet-Draft                    SPDY                       August 2012
   |  Data  |
   +========+
 
-   Length: An unsigned 16-bit value representing the number of bytes of
-   the data field.
+   Length: An unsigned 16-bit value representing the total number of
+   bytes of the frame.
 
    Type: The frame type.  See Frame Types (Section 2.6) for the complete
    list of frames.
