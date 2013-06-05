@@ -145,8 +145,8 @@
 Network Working Group                                          M. Belshe
 Internet-Draft                                                     Twist
 Intended status: Standards Track                                 R. Peon
-Expires: February 2, 2013                                    Google, Inc
-                                                             August 2012
+Expires: December 6, 2013                                    Google, Inc
+                                                            June 4, 2013
 
 
                              <span class="h1">SPDY Protocol</span>
@@ -178,11 +178,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 2, 2013.
+   This Internet-Draft will expire on December 6, 2013.
 
 Copyright Notice
 
-   Copyright (c) 2012 IETF Trust and the persons identified as the
+   Copyright (c) 2013 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to <a href="./rfcmarkup?bcp=78">BCP 78</a> and the IETF Trust's Legal
@@ -193,9 +193,9 @@ Copyright Notice
 
 
 
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 1]</span>
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 1]</span>
 </pre><pre class='newpage'><a name="page-2" id="page-2" href="#page-2" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
 
 
    to this document.  Code Components extracted from this document must
@@ -205,90 +205,87 @@ Copyright Notice
 
 Table of Contents
 
-   1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . . . intro
-     1.1.  Document Organization . . . . . . . . . . . . . . . . . ancho
-     1.2.  Definitions . . . . . . . . . . . . . . . . . . . . . . ancho
-   2.  SPDY Framing Layer  . . . . . . . . . . . . . . . . . . . . Frami
-     2.1.  Connection  . . . . . . . . . . . . . . . . . . . . . . ancho
-     2.2.  Connection Header . . . . . . . . . . . . . . . . . . . Conne
-     2.3.  Framing . . . . . . . . . . . . . . . . . . . . . . . . ancho
-       2.3.1.  Frame Header  . . . . . . . . . . . . . . . . . . . Frame
-       2.3.2.  Frame Size  . . . . . . . . . . . . . . . . . . . . Frame
-     2.4.  Streams . . . . . . . . . . . . . . . . . . . . . . . . ancho
-       2.4.1.  Stream Creation . . . . . . . . . . . . . . . . . . Strea
-       2.4.2.  Stream priority . . . . . . . . . . . . . . . . . . Strea
-       2.4.3.  Stream half-close . . . . . . . . . . . . . . . . . Strea
-       2.4.4.  Stream close  . . . . . . . . . . . . . . . . . . . Strea
-     2.5.  Error Handling  . . . . . . . . . . . . . . . . . . . . ancho
-       2.5.1.  Connection Error Handling . . . . . . . . . . . . . Conne
-       2.5.2.  Stream Error Handling . . . . . . . . . . . . . . . Strea
-       2.5.3.  Error Codes . . . . . . . . . . . . . . . . . . . . Error
-     2.6.  Name/Value Header Block . . . . . . . . . . . . . . . . Heade
-       2.6.1.  Compression . . . . . . . . . . . . . . . . . . . . Compr
-     2.7.  Frame Types . . . . . . . . . . . . . . . . . . . . . . frame
-       2.7.1.  DATA Frames . . . . . . . . . . . . . . . . . . . . DataF
-       2.7.2.  HEADERS+PRIORITY  . . . . . . . . . . . . . . . . . HEADE
-       2.7.3.  RST_STREAM  . . . . . . . . . . . . . . . . . . . . RST_S
-       2.7.4.  SETTINGS  . . . . . . . . . . . . . . . . . . . . . SETTI
-       2.7.5.  PUSH_PROMISE  . . . . . . . . . . . . . . . . . . . PUSH_
-       2.7.6.  PING  . . . . . . . . . . . . . . . . . . . . . . .  PING
-       2.7.7.  GOAWAY  . . . . . . . . . . . . . . . . . . . . . . GOAWA
-       2.7.8.  HEADERS . . . . . . . . . . . . . . . . . . . . . . HEADE
-       2.7.9.  WINDOW_UPDATE . . . . . . . . . . . . . . . . . . . WINDO
-       2.7.10. CREDENTIAL  . . . . . . . . . . . . . . . . . . . . CREDE
-   3.  HTTP Layering over SPDY . . . . . . . . . . . . . . . . . . HTTPL
-     3.1.  Connection Management . . . . . . . . . . . . . . . . . ancho
-       3.1.1.  Use of GOAWAY . . . . . . . . . . . . . . . . . . . ancho
-     3.2.  HTTP Request/Response . . . . . . . . . . . . . . . . . ancho
-       3.2.1.  Request . . . . . . . . . . . . . . . . . . . . . . ancho
-       3.2.2.  Response  . . . . . . . . . . . . . . . . . . . . . ancho
-       3.2.3.  Authentication  . . . . . . . . . . . . . . . . . . Authe
-     3.3.  Server Push Transactions  . . . . . . . . . . . . . . . ancho
-       3.3.1.  Server implementation . . . . . . . . . . . . . . . ancho
-       3.3.2.  Client implementation . . . . . . . . . . . . . . . ancho
+   <a href="#section-1">1</a>.  Introduction . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-4">4</a>
+     <a href="#section-1.1">1.1</a>.  Document Organization  . . . . . . . . . . . . . . . . . .  <a href="#page-4">4</a>
+     <a href="#section-1.2">1.2</a>.  Conventions and Terminology  . . . . . . . . . . . . . . .  <a href="#page-5">5</a>
+   <a href="#section-2">2</a>.  SPDY Framing Layer . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-5">5</a>
+     <a href="#section-2.1">2.1</a>.  Connection . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-6">6</a>
+     <a href="#section-2.2">2.2</a>.  Connection Header  . . . . . . . . . . . . . . . . . . . .  <a href="#page-6">6</a>
+     <a href="#section-2.3">2.3</a>.  Framing  . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-7">7</a>
+       <a href="#section-2.3.1">2.3.1</a>.  Frame Header . . . . . . . . . . . . . . . . . . . . .  <a href="#page-7">7</a>
+       <a href="#section-2.3.2">2.3.2</a>.  Frame Size . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-8">8</a>
+     <a href="#section-2.4">2.4</a>.  Streams  . . . . . . . . . . . . . . . . . . . . . . . . .  <a href="#page-8">8</a>
+       <a href="#section-2.4.1">2.4.1</a>.  Stream Creation  . . . . . . . . . . . . . . . . . . .  <a href="#page-9">9</a>
+       <a href="#section-2.4.2">2.4.2</a>.  Stream priority  . . . . . . . . . . . . . . . . . . . <a href="#page-10">10</a>
+       <a href="#section-2.4.3">2.4.3</a>.  Stream half-close  . . . . . . . . . . . . . . . . . . <a href="#page-10">10</a>
+       <a href="#section-2.4.4">2.4.4</a>.  Stream close . . . . . . . . . . . . . . . . . . . . . <a href="#page-11">11</a>
+     <a href="#section-2.5">2.5</a>.  Error Handling . . . . . . . . . . . . . . . . . . . . . . <a href="#page-11">11</a>
+       <a href="#section-2.5.1">2.5.1</a>.  Connection Error Handling  . . . . . . . . . . . . . . <a href="#page-12">12</a>
+       <a href="#section-2.5.2">2.5.2</a>.  Stream Error Handling  . . . . . . . . . . . . . . . . <a href="#page-12">12</a>
+       <a href="#section-2.5.3">2.5.3</a>.  Error Codes  . . . . . . . . . . . . . . . . . . . . . <a href="#page-13">13</a>
+     <a href="#section-2.6">2.6</a>.  Name/Value Header Block  . . . . . . . . . . . . . . . . . <a href="#page-13">13</a>
+       <a href="#section-2.6.1">2.6.1</a>.  Compression  . . . . . . . . . . . . . . . . . . . . . <a href="#page-18">18</a>
+     <a href="#section-2.7">2.7</a>.  Frame Types  . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-20">20</a>
+       <a href="#section-2.7.1">2.7.1</a>.  DATA Frames  . . . . . . . . . . . . . . . . . . . . . <a href="#page-21">21</a>
+       <a href="#section-2.7.2">2.7.2</a>.  HEADERS+PRIORITY . . . . . . . . . . . . . . . . . . . <a href="#page-21">21</a>
+       <a href="#section-2.7.3">2.7.3</a>.  RST_STREAM . . . . . . . . . . . . . . . . . . . . . . <a href="#page-22">22</a>
+       <a href="#section-2.7.4">2.7.4</a>.  SETTINGS . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-22">22</a>
+       <a href="#section-2.7.5">2.7.5</a>.  PUSH_PROMISE . . . . . . . . . . . . . . . . . . . . . <a href="#page-26">26</a>
+       <a href="#section-2.7.6">2.7.6</a>.  PING . . . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-27">27</a>
+       <a href="#section-2.7.7">2.7.7</a>.  GOAWAY . . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-27">27</a>
+       <a href="#section-2.7.8">2.7.8</a>.  HEADERS  . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-29">29</a>
+       <a href="#section-2.7.9">2.7.9</a>.  WINDOW_UPDATE  . . . . . . . . . . . . . . . . . . . . <a href="#page-30">30</a>
+       <a href="#section-2.7.10">2.7.10</a>. CREDENTIAL . . . . . . . . . . . . . . . . . . . . . . <a href="#page-33">33</a>
+   <a href="#section-3">3</a>.  HTTP Message Exchanges . . . . . . . . . . . . . . . . . . . . <a href="#page-35">35</a>
+     <a href="#section-3.1">3.1</a>.  Connection Management  . . . . . . . . . . . . . . . . . . <a href="#page-35">35</a>
+     <a href="#section-3.2">3.2</a>.  HTTP Request/Response  . . . . . . . . . . . . . . . . . . <a href="#page-36">36</a>
+       <a href="#section-3.2.1">3.2.1</a>.  HTTP Header Fields and SPDY Headers  . . . . . . . . . <a href="#page-36">36</a>
+       <a href="#section-3.2.2">3.2.2</a>.  Request  . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-36">36</a>
+       <a href="#section-3.2.3">3.2.3</a>.  Response . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-37">37</a>
+       <a href="#section-3.2.4">3.2.4</a>.  Authentication . . . . . . . . . . . . . . . . . . . . <a href="#page-38">38</a>
+     <a href="#section-3.3">3.3</a>.  Server Push Transactions . . . . . . . . . . . . . . . . . <a href="#page-39">39</a>
+       <a href="#section-3.3.1">3.3.1</a>.  Server implementation  . . . . . . . . . . . . . . . . <a href="#page-40">40</a>
+       <a href="#section-3.3.2">3.3.2</a>.  Client implementation  . . . . . . . . . . . . . . . . <a href="#page-42">42</a>
 
 
 
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 2]</span>
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 2]</span>
 </pre><pre class='newpage'><a name="page-3" id="page-3" href="#page-3" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
 
 
-   4.  WebSocket Layering over SPDY  . . . . . . . . . . . . . . . WebSo
-     4.1.  Connection Management . . . . . . . . . . . . . . . . . ancho
-       4.1.1.  Opening Handshake . . . . . . . . . . . . . . . . . ancho
-       4.1.2.  Closing Handshake . . . . . . . . . . . . . . . . . ancho
-     4.2.  Bi-directional Communication  . . . . . . . . . . . . . ancho
-       4.2.1.  Frame mapping . . . . . . . . . . . . . . . . . . . ancho
-   5.  Design Rationale and Notes  . . . . . . . . . . . . . . . . ancho
-     5.1.  Separation of Framing Layer and Application Layer . . . ancho
-     5.2.  Error handling - Framing Layer  . . . . . . . . . . . . ancho
-     5.3.  One Connection Per Domain . . . . . . . . . . . . . . . ancho
-     5.4.  Fixed vs Variable Length Fields . . . . . . . . . . . . ancho
-     5.5.  Compression Context(s)  . . . . . . . . . . . . . . . . ancho
-     5.6.  Unidirectional streams  . . . . . . . . . . . . . . . . ancho
-     5.7.  Data Compression  . . . . . . . . . . . . . . . . . . . ancho
-     5.8.  Server Push . . . . . . . . . . . . . . . . . . . . . . ancho
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . ancho
-     6.1.  Use of Same-origin constraints  . . . . . . . . . . . . ancho
-     6.2.  HTTP Headers and SPDY Headers . . . . . . . . . . . . . ancho
-     6.3.  Cross-Protocol Attacks  . . . . . . . . . . . . . . . . ancho
-     6.4.  Server Push Implicit Headers  . . . . . . . . . . . . . ancho
-   7.  Privacy Considerations  . . . . . . . . . . . . . . . . . . ancho
-     7.1.  Long Lived Connections  . . . . . . . . . . . . . . . . ancho
-     7.2.  SETTINGS frame  . . . . . . . . . . . . . . . . . . . . ancho
-   8.  Sub-protocol negotiation  . . . . . . . . . . . . . . . . . ancho
-     8.1.  Supporting scheme negotiation using SETTINGS frame  . . ancho
-   9.  Incompatibilities with SPDY draft #3  . . . . . . . . . . . ancho
-   10. Requirements Notation . . . . . . . . . . . . . . . . . . . ancho
-   11. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . ancho
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . ancho
-     12.1. Normative References  . . . . . . . . . . . . . . . . . ancho
-     12.2. Informative References  . . . . . . . . . . . . . . . . ancho
-   <a href="#appendix-A">Appendix A</a>.  Changes  . . . . . . . . . . . . . . . . . . . . . ancho
-
-
-
+   <a href="#section-4">4</a>.  WebSocket Layering over SPDY . . . . . . . . . . . . . . . . . <a href="#page-43">43</a>
+     <a href="#section-4.1">4.1</a>.  Connection Management  . . . . . . . . . . . . . . . . . . <a href="#page-43">43</a>
+       <a href="#section-4.1.1">4.1.1</a>.  Opening Handshake  . . . . . . . . . . . . . . . . . . <a href="#page-43">43</a>
+       <a href="#section-4.1.2">4.1.2</a>.  Closing Handshake  . . . . . . . . . . . . . . . . . . <a href="#page-44">44</a>
+     <a href="#section-4.2">4.2</a>.  Bi-directional Communication . . . . . . . . . . . . . . . <a href="#page-45">45</a>
+       <a href="#section-4.2.1">4.2.1</a>.  Frame mapping  . . . . . . . . . . . . . . . . . . . . <a href="#page-45">45</a>
+   <a href="#section-5">5</a>.  Design Rationale and Notes . . . . . . . . . . . . . . . . . . <a href="#page-46">46</a>
+     <a href="#section-5.1">5.1</a>.  Separation of Framing Layer and Application Layer  . . . . <a href="#page-46">46</a>
+     <a href="#section-5.2">5.2</a>.  Error handling - Framing Layer . . . . . . . . . . . . . . <a href="#page-47">47</a>
+     <a href="#section-5.3">5.3</a>.  One Connection Per Domain  . . . . . . . . . . . . . . . . <a href="#page-47">47</a>
+     <a href="#section-5.4">5.4</a>.  Fixed vs Variable Length Fields  . . . . . . . . . . . . . <a href="#page-47">47</a>
+     <a href="#section-5.5">5.5</a>.  Compression Context(s) . . . . . . . . . . . . . . . . . . <a href="#page-48">48</a>
+     <a href="#section-5.6">5.6</a>.  Unidirectional streams . . . . . . . . . . . . . . . . . . <a href="#page-48">48</a>
+     <a href="#section-5.7">5.7</a>.  Data Compression . . . . . . . . . . . . . . . . . . . . . <a href="#page-48">48</a>
+     <a href="#section-5.8">5.8</a>.  Server Push  . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-49">49</a>
+   <a href="#section-6">6</a>.  Security Considerations  . . . . . . . . . . . . . . . . . . . <a href="#page-49">49</a>
+     <a href="#section-6.1">6.1</a>.  Use of Same-origin constraints . . . . . . . . . . . . . . <a href="#page-49">49</a>
+     <a href="#section-6.2">6.2</a>.  HTTP Headers and SPDY Headers  . . . . . . . . . . . . . . <a href="#page-49">49</a>
+     <a href="#section-6.3">6.3</a>.  Cross-Protocol Attacks . . . . . . . . . . . . . . . . . . <a href="#page-49">49</a>
+     <a href="#section-6.4">6.4</a>.  Server Push Implicit Headers . . . . . . . . . . . . . . . <a href="#page-49">49</a>
+   <a href="#section-7">7</a>.  Privacy Considerations . . . . . . . . . . . . . . . . . . . . <a href="#page-50">50</a>
+     <a href="#section-7.1">7.1</a>.  Long Lived Connections . . . . . . . . . . . . . . . . . . <a href="#page-50">50</a>
+     <a href="#section-7.2">7.2</a>.  SETTINGS frame . . . . . . . . . . . . . . . . . . . . . . <a href="#page-50">50</a>
+   <a href="#section-8">8</a>.  Sub-protocol negotiation . . . . . . . . . . . . . . . . . . . <a href="#page-50">50</a>
+     <a href="#section-8.1">8.1</a>.  Supporting scheme negotiation using SETTINGS frame . . . . <a href="#page-50">50</a>
+   <a href="#section-9">9</a>.  Incompatibilities with SPDY draft #3 . . . . . . . . . . . . . <a href="#page-50">50</a>
+   <a href="#section-10">10</a>. Requirements Notation  . . . . . . . . . . . . . . . . . . . . <a href="#page-52">52</a>
+   <a href="#section-11">11</a>. Acknowledgements . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-52">52</a>
+   <a href="#section-12">12</a>. References . . . . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-52">52</a>
+     <a href="#section-12.1">12.1</a>. Normative References . . . . . . . . . . . . . . . . . . . <a href="#page-52">52</a>
+     <a href="#section-12.2">12.2</a>. Informative References . . . . . . . . . . . . . . . . . . <a href="#page-54">54</a>
+   <a href="#appendix-A">Appendix A</a>.  Changes . . . . . . . . . . . . . . . . . . . . . . . <a href="#page-54">54</a>
 
 
 
@@ -305,12 +302,15 @@ Table of Contents
 
 
 
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 3]</span>
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 3]</span>
 </pre><pre class='newpage'><a name="page-4" id="page-4" href="#page-4" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
 
 
-<span class="h2"><a name="section-1">1</a>.  Overview</span>
+<span class="h2"><a name="section-1">1</a>.  Introduction</span>
 
    One of the bottlenecks of HTTP implementations is that HTTP relies on
    multiple connections for concurrency.  This causes several problems,
@@ -353,48 +353,79 @@ Table of Contents
 <span class="h3"><a name="section-1.1">1.1</a>.  Document Organization</span>
 
    The SPDY Specification is split into two parts: a framing layer
-   (<a href="#section-2">Section 2</a>), which multiplexes a TCP connection into independent,
-   length-prefixed frames, and an HTTP layer (<a href="#section-3">Section 3</a>), which
-   specifies the mechanism for overlaying HTTP request/response pairs on
-   top of the framing layer.  While some of the framing layer concepts
-   are isolated from the HTTP layer, building a generic framing layer
+   (<a href="#section-2">Section 2</a>), which multiplexes a single TCP connection into
+   independent frames of various types; and an HTTP layer (<a href="#section-3">Section 3</a>),
+   which specifies the mechanism for expressing HTTP interactions using
+   the framing layer.  While some of the framing layer concepts are
+   isolated from HTTP, building a generic framing layer has not been a
 
 
 
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 4]</span>
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 4]</span>
 </pre><pre class='newpage'><a name="page-5" id="page-5" href="#page-5" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
 
 
-   has not been a goal.  The framing layer is tailored to the needs of
-   the HTTP protocol and server push.
+   goal.  The framing layer is tailored to the needs of the HTTP
+   protocol and server push.
 
-<span class="h3"><a name="section-1.2">1.2</a>.  Definitions</span>
+<span class="h3"><a name="section-1.2">1.2</a>.  Conventions and Terminology</span>
 
-      client: The endpoint initiating the SPDY connection.
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in <a href="./rfcmarkup?rfc=2119">RFC 2119</a> [<a href="./rfcmarkup?rfc=2119" title='"Key words for use in RFCs to Indicate Requirement Levels"'>RFC2119</a>].
 
-      connection: A transport-level connection between two endpoints.
+   All numeric values are in network byte order.  Values are unsigned
+   unless otherwise indicated.  Literal values are provided in decimal
+   or hexadecimal as appropriate.  Hexadecimal literals are prefixed
+   with "0x" to distinguish them from decimal literals.
 
-      endpoint: Either the client or server of a connection.
+   The following terms are used:
 
-      frame: A header-prefixed sequence of bytes sent over a SPDY
-      connection.
+   client:  The endpoint initiating the SPDY connection.
 
-      server: The endpoint which did not initiate the SPDY connection.
+   connection:  A transport-level connection between two endpoints.
 
-      connection error: An error on the SPDY connection.
+   endpoint:  Either the client or server of the connection.
 
-      stream: A potentially bi-directional flow of bytes across a
-      virtual channel within a SPDY connection.
+   frame:  The smallest unit of communication within an SPDY connection,
+      consisting of a header and a variable-length sequence of bytes
+      structured according to the frame type.
 
-      stream error: An error on an individual SPDY stream.
+   peer:  An endpoint.  When discussing a particular endpoint, "peer"
+      refers to the endpoint that is remote to the primary subject of
+      discussion.
+
+   receiver:  An endpoint that is receiving frames.
+
+   sender:  An endpoint that is transmitting frames.
+
+   server:  The endpoint which did not initiate the SPDY connection.
+
+   connection error:  An error on the SPDY connection.
+
+   stream:  A bi-directional flow of frames across a virtual channel
+      within the SPDY connection.
+
+   stream error:  An error on the individual SPDY stream.
 
 <span class="h2"><a name="section-2">2</a>.  SPDY Framing Layer</span>
+
+
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 5]</span>
+</pre><pre class='newpage'><a name="page-6" id="page-6" href="#page-6" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
 <span class="h3"><a name="section-2.1">2.1</a>.  Connection</span>
 
    The SPDY framing layer runs atop a reliable transport layer such as
-   TCP [<a href="./rfcmarkup?rfc=0793">RFC0793</a>].  The client is the TCP connection initiator.  SPDY
+   TCP [<a href="./rfcmarkup?rfc=0793" title='"Transmission Control Protocol"'>RFC0793</a>].  The client is the TCP connection initiator.  SPDY
    connections are persistent connections.
 
    For best performance, it is expected that non-battery operated
@@ -415,14 +446,7 @@ Table of Contents
    connection header as a final confirmation and to establish the
    default parameters for the SPDY connection.
 
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 5]</span>
-</pre><pre class='newpage'><a name="page-6" id="page-6" href="#page-6" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
-   The client connection header is a sequence of 25 octets (in hex
+   The client connection header is a sequence of 24 octets (in hex
    notation)
 
    464f4f202a20485454502f322e300d0a0d0a42410d0a0d0a
@@ -439,13 +463,21 @@ Table of Contents
       The client connection header is selected so that a large
       proportion of HTTP/1.1 or HTTP/1.0 servers and intermediaries do
       not attempt to process further frames.  Note that this does not
-      address the concerns raised in [TALKING].
+      address the concerns raised in [<a href="#ref-TALKING" title='"Talking to Yourself for Fun and Profit"'>TALKING</a>].
 
    The server connection header consists of just a SETTINGS frame
    (<a href="#section-2.7.4">Section 2.7.4</a>) that MUST be the first frame the server sends in the
    SPDY connection.
 
    To avoid unnecessary latency, clients are permitted to send
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 6]</span>
+</pre><pre class='newpage'><a name="page-7" id="page-7" href="#page-7" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    additional frames to the server immediately after sending the client
    connection header, without waiting to receive the server connection
    header.  It is important to note, however, that the server connection
@@ -469,15 +501,6 @@ Table of Contents
    SPDY frames share a common base format consisting of an 8-byte header
    followed by 0 to 65535 bytes of data.
 
-
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 6]</span>
-</pre><pre class='newpage'><a name="page-7" id="page-7" href="#page-7" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -500,6 +523,16 @@ Table of Contents
       the remainder of the frame header and data are interpreted.
       Implementations MUST ignore unsupported and unrecognized frame
       types.
+
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 7]</span>
+</pre><pre class='newpage'><a name="page-8" id="page-8" href="#page-8" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
    Flags:  An 8-bit field reserved for frame-type specific boolean
       flags.
@@ -526,14 +559,6 @@ Table of Contents
       connection as a whole as opposed to an individual stream.
 
    The structure and content of the remaining frame data is dependent
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 7]</span>
-</pre><pre class='newpage'><a name="page-8" id="page-8" href="#page-8" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    entirely on the frame type.
 
 <span class="h4"><a name="section-2.3.2">2.3.2</a>.  Frame Size</span>
@@ -551,12 +576,20 @@ Table of Contents
    code.
 
    [[anchor6: : Need a way to signal the maximum frame size; no way to
-   RST_STREAM on non-stream-related frames.]]Issue 28 [1]
+   RST_STREAM on non-stream-related frames.]]Issue 28 [<a href="#ref-1">1</a>]
 
 <span class="h3"><a name="section-2.4">2.4</a>.  Streams</span>
 
    A "stream" is an independent, bi-directional sequence of frames
    exchanged between the client and server within a SPDY connection.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 8]</span>
+</pre><pre class='newpage'><a name="page-9" id="page-9" href="#page-9" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    Streams have several important characteristics:
 
    o  Streams can be established and used unilaterally or shared by
@@ -578,17 +611,6 @@ Table of Contents
    o  A single SPDY connection can contain multiple concurrently active
       streams, with either endpoint interleaving frames from multiple
       streams.
-
-
-
-
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 8]</span>
-</pre><pre class='newpage'><a name="page-9" id="page-9" href="#page-9" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
 
 <span class="h4"><a name="section-2.4.1">2.4.1</a>.  Stream Creation</span>
 
@@ -616,6 +638,14 @@ Table of Contents
    specify the maximum number of concurrent streams the server can
    initiate, and servers specify the maximum number of concurrent
    streams the client can initiate.  Peer endpoints MUST NOT exceed this
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013                [Page 9]</span>
+</pre><pre class='newpage'><a name="page-10" id="page-10" href="#page-10" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    limit.  All concurrently active streams initiated by an endpoint,
    including streams that are half-open (<a href="#section-2.4.3">Section 2.4.3</a>) in any
    direction, count toward that endpoint's limit.
@@ -638,14 +668,6 @@ Table of Contents
    The endpoint establishing a new stream can assign a priority for the
    stream.  Priority is represented as an unsigned 31-bit integer. 0
    represents the highest priority and 2-1 represents the lowest
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013                [Page 9]</span>
-</pre><pre class='newpage'><a name="page-10" id="page-10" href="#page-10" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    priority.
 
    The purpose of this value is to allow the initiating endpoint to
@@ -672,6 +694,14 @@ Table of Contents
    stream is considered to be fully closed.
 
    If an endpoint receives additional frames for a stream that was
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 10]</span>
+</pre><pre class='newpage'><a name="page-11" id="page-11" href="#page-11" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    previously half-closed by the sending peer, the recipient MUST
    respond with a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type STREAM_CLOSED.
 
@@ -690,17 +720,6 @@ Table of Contents
    Normal termination:  Normal stream termination occurs when both
       client and server have half-closed the stream by sending a frame
       containing a FINAL flag (<a href="#section-2.3.1">Section 2.3.1</a>).
-
-
-
-
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 10]</span>
-</pre><pre class='newpage'><a name="page-11" id="page-11" href="#page-11" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
 
    Half-close on unidirectional stream:  A stream that only has frames
       sent in one direction can be tentatively considered to be closed
@@ -732,6 +751,13 @@ Table of Contents
    o  An error condition that renders the entire connection unusable is
       a connection error.
 
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 11]</span>
+</pre><pre class='newpage'><a name="page-12" id="page-12" href="#page-12" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    o  An error in an individual stream is a stream error.
 
 <span class="h4"><a name="section-2.5.1">2.5.1</a>.  Connection Error Handling</span>
@@ -750,13 +776,6 @@ Table of Contents
    receiving endpoint.  In the event of a connection error, GOAWAY only
    provides a best-effort attempt to communicate with the peer about why
    the connection is being terminated.
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 11]</span>
-</pre><pre class='newpage'><a name="page-12" id="page-12" href="#page-12" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
 
    An endpoint can end a connection at any time.  In particular, an
    endpoint MAY choose to treat a stream error as a connection error if
@@ -787,6 +806,14 @@ Table of Contents
    round trip time.  This behavior is permitted to deal with misbehaving
    implementations.
 
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 12]</span>
+</pre><pre class='newpage'><a name="page-13" id="page-13" href="#page-13" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    An endpoint MUST NOT send a RST_STREAM in response to an RST_STREAM
    frame, to avoid looping.
 
@@ -804,15 +831,6 @@ Table of Contents
    NO_ERROR (0):  The associated condition is not as a result of an
       error.  For example, a GOAWAY might include this code to indicate
       graceful shutdown of a connection.
-
-
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 12]</span>
-</pre><pre class='newpage'><a name="page-13" id="page-13" href="#page-13" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
 
    PROTOCOL_ERROR (1):  The endpoint detected an unspecific protocol
       error.  This error is for use when a more specific error code is
@@ -844,6 +862,14 @@ Table of Contents
    A Name/Value Header Block augments the streams or group of streams
    identified by the HEADERS+PRIORITY (<a href="#section-2.7.2">Section 2.7.2</a>), HEADERS
    (<a href="#section-2.7.8">Section 2.7.8</a>), or PUSH_PROMISE (<a href="#section-2.7.5">Section 2.7.5</a>) frame stream with
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 13]</span>
+</pre><pre class='newpage'><a name="page-14" id="page-14" href="#page-14" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    additional metadata.
 
    At the group level, a map of token-index to key-pair is maintained
@@ -862,14 +888,6 @@ Table of Contents
       MaxValEntries: default(64)
 
    It is expected that either party will set these to larger values
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 13]</span>
-</pre><pre class='newpage'><a name="page-14" id="page-14" href="#page-14" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    immediately upon connection establishment using the SETTINGS frame.
 
    A stream with a HeaderBlock which declares that it is using
@@ -900,6 +918,14 @@ Table of Contents
 
                  +--------+--------+=========+
                  | OpCode | NumOps | Op Args |
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 14]</span>
+</pre><pre class='newpage'><a name="page-15" id="page-15" href="#page-15" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
                  +--------+--------+=========+
 
    HG: (Header Group) An 8 bit unsigned integer specifying the header
@@ -918,14 +944,6 @@ Table of Contents
       the current header group, it will be added to the current header
       group.  This opcode thus affects what parts of the data stored in
       the LRU are interpreted as being visible in the current set of
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 14]</span>
-</pre><pre class='newpage'><a name="page-15" id="page-15" href="#page-15" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
       headers for whatever frame includes the HeaderBlock
 
       0x1 (Clone) indicates that the data which follows will be a key-
@@ -956,6 +974,14 @@ Table of Contents
    the byte boundary, the remaining bits of that byte are padded with
    zero.  Strings in a request are encoded with a different huffman-
    encoder than strings in a response, as the frequency of occurance in
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 15]</span>
+</pre><pre class='newpage'><a name="page-16" id="page-16" href="#page-16" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    these differ by quite a bit.
 
               A string is either:
@@ -975,13 +1001,6 @@ Table of Contents
    doing this until all operations have been encoded.  It is expected
    that this will be extremely rare.
 
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 15]</span>
-</pre><pre class='newpage'><a name="page-16" id="page-16" href="#page-16" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    Detail of an operation with an opcode of 0x1 (Toggle):
 
                  0        1
@@ -999,6 +1018,25 @@ Table of Contents
                  +--------+--------+
 
    Detail of an operation with an opcode of 0x2 (Clone):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 16]</span>
+</pre><pre class='newpage'><a name="page-17" id="page-17" href="#page-17" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
                  0        1
                  +--------+--------+
@@ -1030,14 +1068,6 @@ Table of Contents
                  | String | String |
                  +========+========+
 
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 16]</span>
-</pre><pre class='newpage'><a name="page-17" id="page-17" href="#page-17" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    Detail of an operation with an opcode of 0x4 (Eref):
 
                  0        1
@@ -1055,7 +1085,15 @@ Table of Contents
                  +========+========+
 
    Each header name must have at least one value.  Header names are
-   encoded using the US-ASCII character set [ASCII] and must be all
+   encoded using the US-ASCII character set [<a href="#ref-ASCII" title='"US-ASCII. Coded Character Set - 7-Bit American Standard Code for Information Interchange. Standard ANSI X3.4-1986, ANSI, 1986."'>ASCII</a>] and must be all
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 17]</span>
+</pre><pre class='newpage'><a name="page-18" id="page-18" href="#page-18" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    lower case.  The length of each name must be greater than zero.  A
    recipient of a zero-length name MUST issue a stream error
    (<a href="#section-2.5.2">Section 2.5.2</a>) with the status code PROTOCOL_ERROR for the
@@ -1071,10 +1109,10 @@ Table of Contents
    This block is always compressed using zlib compression.  Within this
    specification, any reference to 'zlib' is referring to the ZLIB
    Compressed Data Format Specification Version 3.3 as part of <a href="./rfcmarkup?rfc=1950">RFC1950</a>.
-   [<a href="./rfcmarkup?rfc=1950">RFC1950</a>]
+   [<a href="./rfcmarkup?rfc=1950" title='"ZLIB Compressed Data Format Specification version 3.3"'>RFC1950</a>]
 
    For each HEADERS compression instance, the initial state is
-   initialized using the following dictionary [UDELCOMPRESSION]:
+   initialized using the following dictionary [<a href="#ref-UDELCOMPRESSION" title='"A Methodology to Derive SPDY&amp;#39;s Initial Dictionary for Zlib Compression"'>UDELCOMPRESSION</a>]:
 
               Request 1 (for index.html):
               HEADERS+PRIORITY 1, stream-group (G)=0
@@ -1086,14 +1124,6 @@ Table of Contents
               Store(0x1): level(C),index(2),k: "user-agent"
               Store(0x1): level(C),index(2),v: "blah blah browser version blah blah"
               Store(0x1): level(C),index(3),k: "accept-encoding"
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 17]</span>
-</pre><pre class='newpage'><a name="page-18" id="page-18" href="#page-18" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
               Store(0x1): level(C),index(3),v: "sdch, bzip, compress"
               Store(0x1): level(G),index(0),k: ":host"
               Store(0x1): level(G),index(0),v: "www.foo.com"
@@ -1112,6 +1142,14 @@ Table of Contents
 
               The stream-group table for group zero looks like this:
               0: ":host", "www.foo.com"
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 18]</span>
+</pre><pre class='newpage'><a name="page-19" id="page-19" href="#page-19" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
               1: "cookie", "SOMELONGSTRINGHTATISMOSTLYOPAQUE;BLAJHBLA"
               2: ":path", "/index.html"
               3: "date", "Wed Jul 18 11:50:43 2012"
@@ -1142,14 +1180,6 @@ Table of Contents
               1: "cookie", "SOMELONGSTRINGHTATISMOSTLYOPAQUE;BLAJHBLA"
               2: ":path", "/index.js"
               3: "date", "Wed Jul 18 11:50:44 2012"
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 18]</span>
-</pre><pre class='newpage'><a name="page-19" id="page-19" href="#page-19" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
               Both the path and the date have changed.
 
               Request 2 (on stream 3) would look like the following if forwarded on HTTP/1.1:
@@ -1168,6 +1198,14 @@ Table of Contents
               Store(0x1): level(G),index(3),v: "Wed Jul 18 11:50:44 PDT 2012"
 
               Connection level-headers are implied.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 19]</span>
+</pre><pre class='newpage'><a name="page-20" id="page-20" href="#page-20" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
               Stream-group level headers are implied.
 
               For this example, using TaCo (truncate and concatenate) wasn't useful.
@@ -1200,12 +1238,6 @@ Table of Contents
               accept-encoding: sdch, bzip, compress
 
 
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 19]</span>
-</pre><pre class='newpage'><a name="page-20" id="page-20" href="#page-20" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
 <span class="h3"><a name="section-2.7">2.7</a>.  Frame Types</span>
 
    This specification defines a number of frame types, each identified
@@ -1221,6 +1253,14 @@ Table of Contents
    any given frame.  Accordingly, while it is expected that new frame
    types will be introduced by extensions to this protocol, only frames
    defined by this document are permitted to alter the connection state.
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 20]</span>
+</pre><pre class='newpage'><a name="page-21" id="page-21" href="#page-21" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
 <span class="h4"><a name="section-2.7.1">2.7.1</a>.  DATA Frames</span>
 
@@ -1254,14 +1294,6 @@ Table of Contents
 
                       HEADERS+PRIORITY Frame Payload
 
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 20]</span>
-</pre><pre class='newpage'><a name="page-21" id="page-21" href="#page-21" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    The HEADERS+PRIORITY frame is identical to the HEADERS frame
    (<a href="#section-2.7.8">Section 2.7.8</a>), preceded by a single reserved bit and a 31-bit
    priority; see <a href="#section-2.4.2">Section 2.4.2</a>.
@@ -1278,6 +1310,13 @@ Table of Contents
 
    The HEADERS+PRIORITY frame modifies the connection state as defined
    in <a href="#section-2.6">Section 2.6</a>.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 21]</span>
+</pre><pre class='newpage'><a name="page-22" id="page-22" href="#page-22" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
 <span class="h4"><a name="section-2.7.3">2.7.3</a>.  RST_STREAM</span>
 
@@ -1310,14 +1349,6 @@ Table of Contents
    stream that might have been sent by the peer prior to the arrival of
    the RST_STREAM.
 
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 21]</span>
-</pre><pre class='newpage'><a name="page-22" id="page-22" href="#page-22" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    RST_STREAM frames MUST be associated with a stream.  If a RST_STREAM
    frame is received whose stream identifier field is 0x0 the recipient
    MUST respond with a connection error (<a href="#section-2.5.1">Section 2.5.1</a>) of type
@@ -1335,6 +1366,14 @@ Table of Contents
 
    Implementations MUST support all of the settings defined by this
    specification and MAY support additional settings defined by
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 22]</span>
+</pre><pre class='newpage'><a name="page-23" id="page-23" href="#page-23" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    extensions.  Unsupported or unrecognized settings MUST be ignored.
    New settings MUST NOT be defined or implemented in a way that
    requires endpoints to understand them in order to communicate
@@ -1366,14 +1405,6 @@ Table of Contents
    anything other than 0x0, the endpoint MUST respond with a connection
    error (<a href="#section-2.5.1">Section 2.5.1</a>) of type PROTOCOL_ERROR.
 
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 22]</span>
-</pre><pre class='newpage'><a name="page-23" id="page-23" href="#page-23" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
 <span class="h5"><a name="section-2.7.4.1">2.7.4.1</a>.  Setting Format</span>
 
    The payload of a SETTINGS frame consists of zero or more settings.
@@ -1390,6 +1421,14 @@ Table of Contents
    +---------------------------------------------------------------+
 
                               Setting Format
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 23]</span>
+</pre><pre class='newpage'><a name="page-24" id="page-24" href="#page-24" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
    Two flags are defined for the 8-bit flags field:
 
@@ -1422,15 +1461,7 @@ Table of Contents
    configuration parameters.
 
    Persistence of configuration parameters is done on a per-origin basis
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 23]</span>
-</pre><pre class='newpage'><a name="page-24" id="page-24" href="#page-24" class="invisible"> </a>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
-   (see [<a href="./rfcmarkup?rfc=6454">RFC6454</a>]).  That is, when a client establishes a connection
+   (see [<a href="./rfcmarkup?rfc=6454" title='"The Web Origin Concept"'>RFC6454</a>]).  That is, when a client establishes a connection
    with a server, and the server requests that the client maintain
    persistent settings, the client SHOULD return the persisted settings
    on all future connections to the same origin, IP address and TCP
@@ -1447,6 +1478,14 @@ Table of Contents
 
    For example, if the server sends IDs 1, 2, and 3 with the
    FLAG_SETTINGS_PERSIST_VALUE in a first SETTINGS frame, and then sends
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 24]</span>
+</pre><pre class='newpage'><a name="page-25" id="page-25" href="#page-25" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
    IDs 4 and 5 with the FLAG_SETTINGS_PERSIST_VALUE in a subsequent
    SETTINGS frame, the client will return values for all 5 settings (1,
    2, 3, 4, and 5 in this example) to the server.
@@ -1476,16 +1515,6 @@ Table of Contents
       is recommended that this value be no smaller than 100, so as to
       not unnecessarily limit parallelism.
 
-
-
-
-
-
-<span class="grey">Belshe &amp; Peon           Expires February 2, 2013               [Page 24]</span>
-</pre><pre class='newpage'>
-<span class="grey">Internet-Draft                    SPDY                       August 2012</span>
-
-
    SETTINGS_CURRENT_CWND (5):  indicates the sender's current TCP CWND
       value.
 
@@ -1503,6 +1532,15 @@ Table of Contents
    SETTINGS_SUPPORTING_SCHEMES (9):  indicates the sender's supported
       overlayering protocol schemes.  The corresponding value must be a
       32-bit value, and which contains flags as follows:
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 25]</span>
+</pre><pre class='newpage'><a name="page-26" id="page-26" href="#page-26" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
 
          bit 0: http
 
@@ -1525,6 +1563,1606 @@ Table of Contents
    in advance of streams the sender intends to initiate.  The
    PUSH_PROMISE frame includes the unsigned 31-bit identifier of the
    stream the endpoint plans to create along with a minimal set of
+   headers that provide additional context for the stream.  <a href="#section-3.3">Section 3.3</a>
+   contains a thorough description of the use of PUSH_PROMISE frames.
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |X|                Promised-Stream-ID (31)                      |
+   +-+-------------------------------------------------------------+
+   |                    Header Block (*)                         ...
+   +---------------------------------------------------------------+
+
+                        PUSH_PROMISE Payload Format
+
+   The payload of a PUSH_PROMISE includes a "Promised-Stream-ID".  This
+   unsigned 31-bit integer identifies the stream the endpoint intends to
+   start sending frames for.  The promised stream identifier MUST be a
+   valid choice for the next stream sent by the sender (see new stream
+   identifier (<a href="#section-2.4.1">Section 2.4.1</a>)).
+
+   PUSH_PROMISE frames MUST be associated with an existing stream.  If
+   the stream identifier field specifies the value 0x0, a recipient MUST
+   respond with a connection error (<a href="#section-2.5.1">Section 2.5.1</a>) of type
+   PROTOCOL_ERROR.
+
+   The state of promised streams is bound to the state of the original
+   associated stream on which the PUSH_PROMISE frame were sent.  If the
+   originating stream state changes to fully closed, all associated
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 26]</span>
+</pre><pre class='newpage'><a name="page-27" id="page-27" href="#page-27" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   promised streams fully close as well. [[anchor11: Ed.  Note: We need
+   clarification on this point.  How synchronized are the lifecycles of
+   streams and associated promised streams?]]
+
+   PUSH_PROMISE uses the same flags as the HEADERS frame, except that a
+   PUSH_PROMISE frame with a CONTINUES bit MUST be followed by another
+   PUSH_PROMISE frame.  See HEADERS frame (<a href="#section-2.7.8">Section 2.7.8</a>) for any flags.
+
+   Promised streams are not required to be used in order promised.  The
+   PUSH_PROMISE only reserves stream identifiers for later use.
+
+   Recipients of PUSH_PROMISE frames can choose to reject promised
+   streams by returning a RST_STREAM referencing the promised stream
+   identifier back to the sender of the PUSH_PROMISE.
+
+   The PUSH_PROMISE frame modifies the connection state as defined in
+   <a href="#section-2.6">Section 2.6</a>.
+
+<span class="h4"><a name="section-2.7.6">2.7.6</a>.  PING</span>
+
+   The PING frame (type=0x6) is a mechanism for measuring a minimal
+   round-trip time from the sender, as well as determining whether an
+   idle connection is still functional.  PING frames can be sent from
+   any endpoint.
+
+   PING frames consist of an arbitrary, variable-length sequence of
+   octets.  Receivers of a PING send a response PING frame with the PONG
+   flag set and precisely the same sequence of octets back to the sender
+   as soon as possible.
+
+   Processing of PING frames SHOULD be performed with the highest
+   priority if there are additional frames waiting to be processed.
+
+   The PING frame defines one type-specific flag:
+
+   PONG (0x2):  Bit 2 being set indicates that this PING frame is a PING
+      response.  An endpoint MUST set this flag in PING responses.  An
+      endpoint MUST NOT respond to PING frames containing this flag.
+
+   PING frames are not associated with any individual stream.  If a PING
+   frame is received with a stream identifier field value other than
+   0x0, the recipient MUST respond with a connection error
+   (<a href="#section-2.5.1">Section 2.5.1</a>) of type PROTOCOL_ERROR.
+
+<span class="h4"><a name="section-2.7.7">2.7.7</a>.  GOAWAY</span>
+
+   The GOAWAY frame (type=0x7) informs the remote peer to stop creating
+   streams on this connection.  It can be sent from the client or the
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 27]</span>
+</pre><pre class='newpage'><a name="page-28" id="page-28" href="#page-28" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   server.  Once sent, the sender will ignore frames sent on new streams
+   for the remainder of the connection.  Receivers of a GOAWAY frame
+   MUST NOT open additional streams on the connection, although a new
+   connection can be established for new streams.  The purpose of this
+   frame is to allow an endpoint to gracefully stop accepting new
+   streams (perhaps for a reboot or maintenance), while still finishing
+   processing of previously established streams.
+
+   There is an inherent race condition between an endpoint starting new
+   streams and the remote sending a GOAWAY frame.  To deal with this
+   case, the GOAWAY contains the stream identifier of the last stream
+   which was processed on the sending endpoint in this connection.  If
+   the receiver of the GOAWAY used streams that are newer than the
+   indicated stream identifier, they were not processed by the sender
+   and the receiver may treat the streams as though they had never been
+   created at all (hence the receiver may want to re-create the streams
+   later on a new connection).
+
+   Endpoints should always send a GOAWAY frame before closing a
+   connection so that the remote can know whether a stream has been
+   partially processed or not.  (For example, if an HTTP client sends a
+   POST at the same time that a server closes a connection, the client
+   cannot know if the server started to process that POST request if the
+   server does not send a GOAWAY frame to indicate where it stopped
+   working).
+
+   After sending a GOAWAY frame, the sender can ignore frames for new
+   streams.
+
+   [[anchor12: Issue: connection state that is established by those
+   "ignored" frames cannot be ignored without the state in the two peers
+   becoming unsynchronized.]]
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |X|                  Last-Stream-ID (31)                        |
+   +-+-------------------------------------------------------------+
+   |                      Error Code (32)                          |
+   +---------------------------------------------------------------+
+
+                           GOAWAY Payload Format
+
+   The GOAWAY frame does not define any type-specific flags.
+
+   The GOAWAY frame applies to the connection, not a specific stream.
+   The stream identifier MUST be zero.
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 28]</span>
+</pre><pre class='newpage'><a name="page-29" id="page-29" href="#page-29" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   The last stream identifier in the GOAWAY frame contains the highest
+   numbered stream identifier for which the sender of the GOAWAY frame
+   has received frames on and might have taken some action on.  All
+   streams up to and including the identified stream might have been
+   processed in some way.  The last stream identifier is set to 0 if no
+   streams were processed.
+
+      Note: In this case, "processed" means that some data from the
+      stream was passed to some higher layer of software that might have
+      taken some action as a result.
+
+   On streams with lower or equal numbered identifiers that do not close
+   completely prior to the connection being closed, re-attempting
+   requests, transactions, or any protocol activity is not possible
+   (with the exception of idempotent actions like HTTP GET, PUT, or
+   DELETE).  Any protocol activity that uses higher numbered streams can
+   be safely retried using a new connection.
+
+   Activity on streams numbered lower or equal to the last stream
+   identifier might still complete successfully.  The sender of a GOAWAY
+   frame gracefully shut down a connection by sending a GOAWAY frame,
+   maintaining the connection in an open state until all in-progress
+   streams complete.
+
+   The last stream ID MUST be 0 if no streams were acted upon.
+
+   The GOAWAY frame also contains a 32-bit error code (<a href="#section-2.5.3">Section 2.5.3</a>)
+   that contains the reason for closing the connection.
+
+<span class="h4"><a name="section-2.7.8">2.7.8</a>.  HEADERS</span>
+
+   The HEADERS frame (type=0x8) provides header fields for a stream.
+   Any number of HEADERS frames can may be sent on an existing stream at
+   any time.
+
+   Additional type-specific flags for the HEADERS frame are:
+
+   CONTINUES (0x2):  The CONTINUES bit indicates that this frame does
+      not contain the entire payload necessary to provide a complete set
+      of headers.
+
+      The payload for a complete set of headers is provided by a
+      sequence of HEADERS frames, terminated by a HEADERS frame without
+      the CONTINUES bit.  Once the sequence terminates, the payload of
+      all HEADERS frames are concatenated and interpreted as a single
+      block.
+
+      A HEADERS frame that includes a CONTINUES bit MUST be followed by
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 29]</span>
+</pre><pre class='newpage'><a name="page-30" id="page-30" href="#page-30" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+      a HEADERS frame for the same stream.  A receiver MUST treat the
+      receipt of any other type of frame or a frame on a different
+      stream as a connection error (<a href="#section-2.5.1">Section 2.5.1</a>) of type
+      PROTOCOL_ERROR.
+
+   The payload of a HEADERS frame contains a Headers Block
+   (<a href="#section-2.6">Section 2.6</a>).
+
+   The HEADERS frame is associated with an existing stream.  If a
+   HEADERS frame is received with a stream identifier of 0x0, the
+   recipient MUST respond with a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type
+   PROTOCOL_ERROR.
+
+   The HEADERS frame changes the connection state as defined in
+   <a href="#section-2.6">Section 2.6</a>.
+
+<span class="h4"><a name="section-2.7.9">2.7.9</a>.  WINDOW_UPDATE</span>
+
+   The WINDOW_UPDATE frame (type=0x9) is used to implement flow control.
+
+   Flow control operates at two levels: on each individual stream and on
+   the entire connection.
+
+   Both types of flow control are hop by hop; that is, only between the
+   two endpoints.  Intermediaries do not forward WINDOW_UPDATE frames
+   between dependent connections.  However, throttling of data transfer
+   by any receiver can indirectly cause the propagation of flow control
+   information toward the original sender.
+
+   Flow control only applies to frames that are identified as being
+   subject to flow control.  Of the frame types defined in this
+   document, this includes only DATA frame.  Frames that are exempt from
+   flow control MUST be accepted and processed, unless the receiver is
+   unable to assign resources to handling the frame.  A receiver MAY
+   respond with a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) or connection error
+   (<a href="#section-2.5.1">Section 2.5.1</a>) of type FLOW_CONTROL_ERROR if it is unable accept a
+   frame.
+
+   The following additional flags are defined for the WINDOW_UPDATE
+   frame:
+
+   END_FLOW_CONTROL (0x2):  Bit 2 being set indicates that flow control
+      for the identified stream or connection has been ended; subsequent
+      frames do not need to be flow controlled.
+
+   The WINDOW_UPDATE frame can be specific to a stream or to the entire
+   connection.  In the former case, the frame's stream identifier
+   indicates the affected stream; in the latter, the value "0" indicates
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 30]</span>
+</pre><pre class='newpage'><a name="page-31" id="page-31" href="#page-31" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   that the entire connection is the subject of the frame.
+
+   The payload of a WINDOW_UPDATE frame is a 32-bit value indicating the
+   additional number of bytes that the sender can transmit in addition
+   to the existing flow control window.  The legal range for this field
+   is 1 to 2 - 1 (0x7fffffff) bytes; the most significant bit of this
+   value is reserved.
+
+<span class="h5"><a name="section-2.7.9.1">2.7.9.1</a>.  The Flow Control Window</span>
+
+   Flow control in SPDY is implemented using a window kept by each
+   sender on every stream.  The flow control window is a simple integer
+   value that indicates how many bytes of data the sender is permitted
+   to transmit; as such, its size is a measure of the buffering
+   capability of the receiver.
+
+   Two flow control windows are applicable; the stream flow control
+   window and the connection flow control window.  The sender MUST NOT
+   send a flow controlled frame with a length that exceeds the space
+   available in either of the flow control windows advertised by the
+   receiver.  Frames with zero length with the FINAL flag set (for
+   example, an empty data frame) MAY be sent if there is no available
+   space in either flow control window.
+
+   For flow control calculations, the 8 byte frame header is not
+   counted.
+
+   After sending a flow controlled frame, the sender reduces the space
+   available in both windows by the length of the transmitted frame.
+
+   The receiver of a frame sends a WINDOW_UPDATE frame as it consumes
+   data and frees up space in flow control windows.  Separate
+   WINDOW_UPDATE frames are sent for the stream and connection level
+   flow control windows.
+
+   A sender that receives a WINDOW_UPDATE frame updates the
+   corresponding window by the amount specified in the frame.
+
+   A sender MUST NOT allow a flow control window to exceed 2 - 1 bytes.
+   If a sender receives a WINDOW_UPDATE that causes a flow control
+   window to exceed this maximum it MUST terminate either the stream or
+   the connection, as appropriate.  For streams, the sender sends a
+   RST_STREAM with the error code of FLOW_CONTROL_ERROR code; for the
+   connection, a GOAWAY frame with a FLOW_CONTROL_ERROR code.
+
+   Flow controlled frames from the sender and WINDOW_UPDATE frames from
+   the receiver are completely asynchronous with respect to each other.
+   This property allows a receiver to aggressively update the window
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 31]</span>
+</pre><pre class='newpage'><a name="page-32" id="page-32" href="#page-32" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   size kept by the sender to prevent streams from stalling.
+
+<span class="h5"><a name="section-2.7.9.2">2.7.9.2</a>.  Initial Flow Control Window Size</span>
+
+   When a SPDY connection is first established, new streams are created
+   with an initial flow control window size of 65535 bytes.  The
+   connection flow control window is 65536 bytes.  Both endpoints can
+   adjust the initial window size for new streams by including a value
+   for SETTINGS_INITIAL_WINDOW_SIZE in the SETTINGS frame that forms
+   part of the connection header.
+
+   Prior to receiving a SETTINGS frame that sets a value for
+   SETTINGS_INITIAL_WINDOW_SIZE, a client can only use the default
+   initial window size when sending flow controlled frames.  Similarly,
+   the connection flow control window is set to the default initial
+   window size until a WINDOW_UPDATE frame is received.
+
+   A SETTINGS frame can alter the initial flow control window size for
+   all current streams.  When the value of SETTINGS_INITIAL_WINDOW_SIZE
+   changes, a receiver MUST adjust the size of all flow control windows
+   that it maintains by the difference between the new value and the old
+   value.
+
+   A change to SETTINGS_INITIAL_WINDOW_SIZE could cause the available
+   space in a flow control window to become negative.  A sender MUST
+   track the negative flow control window, and MUST NOT send new flow
+   controlled frames until it receives WINDOW_UPDATE frames that cause
+   the flow control window to become positive.
+
+   For example, if the server sets the initial window size to be 16KB,
+   and the client sends 64KB immediately on connection establishment,
+   the client will recalculate the available flow control window to be
+   -48KB on receipt of the SETTINGS frame.  The client retains a
+   negative flow control window until WINDOW_UPDATE frames restore the
+   window to being positive, after which the client can resume sending.
+
+<span class="h5"><a name="section-2.7.9.3">2.7.9.3</a>.  Reducing the Stream Window Size</span>
+
+   A receiver that wishes to use a smaller flow control window than the
+   current size can send a new SETTINGS frame.  However, the receiver
+   MUST be prepared to receive data that exceeds this window size, since
+   the sender might send data that exceeds the lower limit prior to
+   processing the SETTINGS frame.
+
+   A receiver has two options for handling streams that exceed flow
+   control limits:
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 32]</span>
+</pre><pre class='newpage'><a name="page-33" id="page-33" href="#page-33" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   1.  The receiver can immediately send RST_STREAM with
+       FLOW_CONTROL_ERROR error code for the affected streams.
+
+   2.  The receiver can accept the streams and tolerate the resulting
+       head of line blocking, sending WINDOW_UPDATE frames as it
+       consumes data.
+
+   If a receiver decides to accept streams, both sides MUST recompute
+   the available flow control window based on the initial window size
+   sent in the SETTINGS.
+
+<span class="h5"><a name="section-2.7.9.4">2.7.9.4</a>.  Ending Flow Control</span>
+
+   After a receiver reads in a frame that marks the end of a stream (for
+   example, a data stream with a FINAL flag set), it MUST cease
+   transmission of WINDOW_UPDATE frames for that stream.  A sender is
+   not obligated to maintain the available flow control window for
+   streams that it is no longer sending on.
+
+   Flow control can be disabled for all streams or the connection using
+   the SETTINGS_FLOW_CONTROL_OPTIONS setting.  An implementation that
+   does not wish to perform flow control can use this in the initial
+   SETTINGS exchange.
+
+   Flow control can be disabled for an individual stream or the overall
+   connection by sending a WINDOW_UPDATE with the END_FLOW_CONTROL flag
+   set.  The payload of a WINDOW_UPDATE frame that has the
+   END_FLOW_CONTROL flag set is ignored.
+
+   Flow control cannot be enabled again once disabled.  Any attempt to
+   re-enable flow control - by sending a WINDOW_UPDATE or by clearing
+   the bits on the SETTINGS_FLOW_CONTROL_OPTIONS setting - MUST be
+   rejected with a FLOW_CONTROL_ERROR error code.
+
+<span class="h4"><a name="section-2.7.10">2.7.10</a>.  CREDENTIAL</span>
+
+   The CREDENTIAL control frame is used by the client to send additional
+   client certificates to the server.  A SPDY client may decide to send
+   requests for resources from different origins on the same SPDY
+   connection if it decides that that server handles both origins.  For
+   example if the IP address associated with both hostnames matches and
+   the SSL server certificate presented in the initial handshake is
+   valid for both hostnames.  However, because the SSL connection can
+   contain at most one client certificate, the client needs a mechanism
+   to send additional client certificates to the server.
+
+   The server is required to maintain a vector of client certificates
+   associated with a SPDY connection.  When the client needs to send a
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 33]</span>
+</pre><pre class='newpage'><a name="page-34" id="page-34" href="#page-34" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   client certificate to the server, it will send a CREDENTIAL frame
+   that specifies the index of the slot in which to store the
+   certificate as well as proof that the client posesses the
+   corresponding private key.  The initial size of this vector must be
+   8.  If the client provides a client certificate during the first TLS
+   handshake, the contents of this certificate must be copied into the
+   first slot (index 1) in the CREDENTIAL vector, though it may be
+   overwritten by subsequent CREDENTIAL frames.  The server must
+   exclusively use the CREDENTIAL vector when evaluating the client
+   certificates associated with an origin.  The server may change the
+   size of this vector by sending a SETTINGS frame with the setting
+   SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE value specified.  In the
+   event that the new size is smaller than the current size, truncation
+   occurs preserving lower-index slots as possible.
+
+   TLS renegotiation with client authentication is incompatible with
+   SPDY given the multiplexed nature of SPDY.  Specifically, imagine
+   that the client has 2 requests outstanding to the server for two
+   different pages (in different tabs).  When the renegotiation + client
+   certificate request comes in, the browser is unable to determine
+   which resource triggered the client certificate request, in order to
+   prompt the user accordingly.
+
+<span class="h2"><a name="section-0">0</a>        1        2        3        4         5        6        7</span>
++--------+--------+--------+--------+-|-------+--------+--------+--------+
+| Length(16)      |    0xa |Flags(8)|X|               0x0                | -&gt;
++--------+--------+--------+--------+-|-------+--------+--------+--------+
+
+<span class="h2"><a name="section-8">8</a>        9        10       11        12</span>
++--------+--------+--------+--------+========+
+| Slot(16)        |Proof Length(16) | Proof  | -&gt;
++--------+--------+--------+--------+========+
+
+/--Repeated to frame end--\
++--------+--------+========+
+| Cert Length(16) | Cert   |
++--------+--------+========+
+
+   Slot: The index in the server's client certificate vector where this
+   certificate should be stored.  If there is already a certificate
+   stored at this index, it will be overwritten.  The index is one
+   based, not zero based; zero is an invalid slot index.
+
+   Proof: Cryptographic proof that the client has possession of the
+   private key associated with the certificate.  The format is a TLS
+   digitally-signed element
+   (<a href="http://tools.ietf.org/html/rfc5246#section-4.7">http://tools.ietf.org/html/rfc5246#section-4.7</a>).  The signature
+   algorithm must be the same as that used in the CertificateVerify
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 34]</span>
+</pre><pre class='newpage'><a name="page-35" id="page-35" href="#page-35" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   message.  However, since the MD5+SHA1 signature type used in TLS 1.0
+   connections can not be correctly encoded in a digitally-signed
+   element, SHA1 must be used when MD5+SHA1 was used in the SSL
+   connection.  The signature is calculated over a 32 byte TLS extractor
+   value (<a href="http://tools.ietf.org/html/rfc5705">http://tools.ietf.org/html/rfc5705</a>) with a label of "EXPORTER
+   SPDY certificate proof" using the empty string as context.  ForRSA
+   certificates the signature would be a PKCS#1 v1.5 signature.  For
+   ECDSA, it would be an ECDSA-Sig-Value
+   (<a href="http://tools.ietf.org/html/rfc5480#appendix-A">http://tools.ietf.org/html/rfc5480#appendix-A</a>).  For a 1024-bit RSA
+   key, the CREDENTIAL message would be ~500 bytes.
+
+   Certificate: The certificate chain, starting with the leaf
+   certificate.  Each certificate must be encoded as a 32 bit length,
+   followed by a DER encoded certificate.  The certificate must be of
+   the same type (RSA, ECDSA, etc) as the client certificate associated
+   with the SSL connection.
+
+   If the server receives a request for a resource with unacceptable
+   credential (either missing or invalid), it must reply with a
+   RST_STREAM frame with the status code INVALID_CREDENTIALS.  Upon
+   receipt of a RST_STREAM frame with INVALID_CREDENTIALS, the client
+   should initiate a new stream directly to the requested origin and
+   resend the request.  Note, SPDY does not allow the server to request
+   different client authentication for different resources in the same
+   origin.
+
+   If the server receives an invalid CREDENTIAL frame, it MUST respond
+   with a GOAWAY frame and shutdown the connection.
+
+<span class="h2"><a name="section-3">3</a>.  HTTP Message Exchanges</span>
+
+   SPDY is intended to be as compatible as possible with current web-
+   based applications.  This means that, from the perspective of the
+   server business logic or application API, the features of HTTP are
+   unchanged.  To achieve this, all of the application request and
+   response header semantics are preserved, although the syntax of
+   conveying those semantics has changed.  Thus, the rules from HTTP/1.1
+   ([<a href="#ref-HTTP-p1" title='"Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing"'>HTTP-p1</a>], [<a href="#ref-HTTP-p2" title='"Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content"'>HTTP-p2</a>], [<a href="#ref-HTTP-p4" title='"Hypertext Transfer Protocol (HTTP/1.1): Conditional Requests"'>HTTP-p4</a>], [<a href="#ref-HTTP-p5" title='"Hypertext Transfer Protocol (HTTP/1.1): Range Requests"'>HTTP-p5</a>], [<a href="#ref-HTTP-p6" title='"Hypertext Transfer Protocol (HTTP/1.1): Caching"'>HTTP-p6</a>], and
+   [<a href="#ref-HTTP-p7" title='"Hypertext Transfer Protocol (HTTP/1.1): Authentication"'>HTTP-p7</a>]) apply with the changes in the sections below.
+
+<span class="h3"><a name="section-3.1">3.1</a>.  Connection Management</span>
+
+   Clients SHOULD NOT open more than one SPDY connection to a given
+   origin ([<a href="./rfcmarkup?rfc=6454" title='"The Web Origin Concept"'>RFC6454</a>]) concurrently.
+
+   Note that it is possible for one SPDY connection to be finishing
+   (e.g. a GOAWAY frame has been sent, but not all streams have
+   finished), while another SPDY connection is starting.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 35]</span>
+</pre><pre class='newpage'><a name="page-36" id="page-36" href="#page-36" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h3"><a name="section-3.2">3.2</a>.  HTTP Request/Response</span>
+
+<span class="h4"><a name="section-3.2.1">3.2.1</a>.  HTTP Header Fields and SPDY Headers</span>
+
+   At the application level, HTTP uses name-value pairs in its header
+   fields.  Because SPDY merges the existing HTTP header fields with
+   SPDY headers, there is a possibility that some HTTP applications
+   already use a particular header field name.  To avoid any conflicts,
+   all header fields introduced for layering HTTP over SPDY are prefixed
+   with ":". ":" is not a valid sequence in HTTP/1.* header field
+   naming, preventing any possible conflict.
+
+<span class="h4"><a name="section-3.2.2">3.2.2</a>.  Request</span>
+
+   The client initiates a request by sending a HEADERS+PRIORITY frame.
+   Requests that do not contain a body MUST set the FINAL flag,
+   indicating that the client intends to send no further data on this
+   stream, unless the server intends to push resources (see
+   <a href="#section-3.3">Section 3.3</a>).  HEADERS+PRIORITY frame does not contain the FINAL flag
+   for requests that contain a body.  The body of a request follows as a
+   series of DATA frames.  The last DATA frame sets the FINAL flag to
+   indicate the end of the body.
+
+   The header fields included in the HEADERS+PRIORITY frame contain all
+   of the HTTP header fields associated with an HTTP request.  The
+   definitions of these headers are largely unchanged relative to
+   HTTP/1.1, with a few notable exceptions:
+
+   o  The HTTP/1.1 request-line has been split into two separate header
+      fields named :method and :path, whose values specify the HTTP
+      method for the request and the request-target, respectively.  The
+      HTTP-version component of the request-line is removed entirely
+      from the headers.
+
+   o  The host and optional port portions of the request URI (see
+      <a href="./rfcmarkup?rfc=3986#section-3.2">[RFC3986], Section&nbsp;3.2</a>), is specified using the new :host header
+      field. [[anchor19: Ed.  Note: it needs to be clarified whether or
+      not this replaces the existing HTTP/1.1 Host header.]]
+
+   o  A new :scheme header field has been added to specify the scheme
+      portion of the request-target (e.g. "https")
+
+   o  All header field names MUST be lowercased, and the definitions of
+      all header field names defined by HTTP/1.1 are updated to be all
+      lowercase.
+
+   o  The Connection, Host, Keep-Alive, Proxy-Connection, and Transfer-
+      Encoding header fields are no longer valid and MUST NOT be sent.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 36]</span>
+</pre><pre class='newpage'><a name="page-37" id="page-37" href="#page-37" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   All HTTP Requests MUST include the ":method", ":path", ":host", and
+   ":scheme" header fields.
+
+   Header fields whose names begin with ":" (whether defined in this
+   document or future extensions to this document) MUST appear before
+   any other header fields.
+
+   If a client sends a HEADERS+PRIORITY frame that omits a mandatory
+   header, the server MUST reply with a HTTP 400 Bad Request reply.
+   [[anchor20: Ed: why PROTOCOL_ERROR on missing ":status" in the
+   response, but HTTP 400 here?]]
+
+   If a server receives a request where the sum of the data frame
+   payload lengths does not equal the size of the Content-Length header
+   field, the server MUST return a 400 (Bad Request) error.
+
+   Although POSTs are inherently chunked, POST requests SHOULD also be
+   accompanied by a Content-Length header field.  First, it informs the
+   server of how much data to expect, which the server can use to track
+   overall progress and provide appropriate user feedback.  More
+   importantly, some HTTP server implementations fail to correctly
+   process requests that omit the Content-Length header field.  Many
+   existing clients send a Content-Length header field, and some server
+   implementations have come to depend upon its presence.
+
+   A client provides priority in requests as a hint to the server.  A
+   server SHOULD attempt to provide responses to higher priority
+   requests before lower priority requests.  A server could send lower
+   priority responses during periods that higher priority responses are
+   unavailable to ensure better utilization of a connection.
+
+   If the server receives a data frame prior to a HEADERS+PRIORITY frame
+   the server MUST treat this as a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type
+   PROTOCOL_ERROR.
+
+<span class="h4"><a name="section-3.2.3">3.2.3</a>.  Response</span>
+
+   The server responds to a client request using the same stream
+   identifier that was used by the request.  An HTTP response begins
+   with a HEADERS frame.  An HTTP response body consists of a series of
+   DATA frames.  The last data frame contains a FINAL flag to indicate
+   the end of the response.  A response that contains no body (such as a
+   204 or 304 response) consists only of a HEADERS frame that contains
+   the FINAL flag to indicate no further data will be sent on the
+   stream.
+
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 37]</span>
+</pre><pre class='newpage'><a name="page-38" id="page-38" href="#page-38" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+      The response status line is unfolded into name-value pairs like
+      other HTTP header fields and must be present:
+
+      ":status":  The HTTP response status code (e.g. "200" or "200 OK")
+
+      All header field names starting with ":" (whether defined in this
+      document or future extensions to this document) MUST appear before
+      any other header fields.
+
+      All header field names MUST be all lowercase.
+
+      The Connection, Keep-Alive, Proxy-Connection, and Transfer-
+      Encoding header fields are not valid and MUST NOT be sent.
+
+      Responses MAY be accompanied by a Content-Length header field for
+      advisory purposes.  This allows clients to learn the full size of
+      an entity prior to receiving all the data frames.  This can help
+      in, for example, reporting progress.
+
+      If a client receives a response where the sum of the data frame
+      payload length does not equal the size of the Content-Length
+      header field, the client MUST ignore the content length header
+      field. [[anchor21: Ed: See.]]issue 46 [<a href="#ref-2">2</a>]
+
+   If a client receives a response with an absent or duplicated status
+   header, the client MUST treat this as a stream error (<a href="#section-2.5.2">Section 2.5.2</a>)
+   of type PROTOCOL_ERROR.
+
+   If the client receives a data frame prior to a HEADERS frame the
+   client MUST treat this as a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type
+   PROTOCOL_ERROR.
+
+   Clients MUST support gzip compression.  Regardless of the value of
+   the Accept-Encoding header field, a server MAY send responses with
+   gzip or deflate encoding.  A compressed response MUST still bear an
+   appropriate Content-Encoding header field.
+
+<span class="h4"><a name="section-3.2.4">3.2.4</a>.  Authentication</span>
+
+   When a client sends a request to an origin server that requires
+   authentication, the server can reply with a "401 Unauthorized"
+   response, and include a WWW-Authenticate challenge header that
+   defines the authentication scheme to be used.  The client then
+   retries the request with an Authorization header appropriate to the
+   specified authentication scheme.
+
+   There are four options for proxy authentication, Basic, Digest, NTLM
+   and Negotiate (SPNEGO).  The first two options were defined in
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 38]</span>
+</pre><pre class='newpage'><a name="page-39" id="page-39" href="#page-39" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   <a href="./rfcmarkup?rfc=2617">RFC2617</a> [<a href="./rfcmarkup?rfc=2617" title='"HTTP Authentication: Basic and Digest Access Authentication"'>RFC2617</a>], and are stateless.  The second two options were
+   developed by Microsoft and specified in <a href="./rfcmarkup?rfc=4559">RFC4559</a> [<a href="./rfcmarkup?rfc=4559" title='"SPNEGO- based Kerberos and NTLM HTTP Authentication in Microsoft Windows"'>RFC4559</a>], and are
+   stateful; otherwise known as multi-round authentication, or
+   connection authentication.
+
+<span class="h5"><a name="section-3.2.4.1">3.2.4.1</a>.  Stateless Authentication</span>
+
+   Stateless Authentication over SPDY is identical to how it is
+   performed over HTTP.  If multiple SPDY streams are concurrently sent
+   to a single server, each will authenticate independently, similar to
+   how two HTTP connections would independently authenticate to a proxy
+   server.
+
+<span class="h5"><a name="section-3.2.4.2">3.2.4.2</a>.  Stateful Authentication</span>
+
+   Unfortunately, the stateful authentication mechanisms were
+   implemented and defined in a such a way that directly violates
+   <a href="./rfcmarkup?rfc=2617">RFC2617</a> - they do not include a "realm" as part of the request.  This
+   is problematic in SPDY because it makes it impossible for a client to
+   disambiguate two concurrent server authentication challenges.
+
+   To deal with this case, SPDY servers using Stateful Authentication
+   MUST implement one of two changes:
+
+      Servers can add a "realm=&lt;desired realm&gt;" header so that the two
+      authentication requests can be disambiguated and run concurrently.
+      Unfortunately, given how these mechanisms work, this is probably
+      not practical.
+
+      Upon sending the first stateful challenge response, the server
+      MUST buffer and defer all further frames which are not part of
+      completing the challenge until the challenge has completed.
+      Completing the authentication challenge may take multiple round
+      trips.  Once the client receives a "401 Authenticate" response for
+      a stateful authentication type, it MUST stop sending new requests
+      to the server until the authentication has completed by receiving
+      a non-401 response on at least one stream.
+
+<span class="h3"><a name="section-3.3">3.3</a>.  Server Push Transactions</span>
+
+   SPDY enables a server to send multiple replies to a client for a
+   single request.  The rationale for this feature is that sometimes a
+   server knows that it will need to send multiple resources in response
+   to a single request.  Without server push features, the client must
+   first download the primary resource, then discover the secondary
+   resource(s), and request them.
+
+   Server push is an optional feature.  The
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 39]</span>
+</pre><pre class='newpage'><a name="page-40" id="page-40" href="#page-40" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   SETTINGS_MAX_CONCURRENT_STREAMS setting from the client limits the
+   number of resources that can be concurrently pushed by a server.
+   Server push can be disabled by clients that do not wish to receive
+   pushed resources by advertising a SETTINGS_MAX_CONCURRENT_STREAMS
+   SETTING (<a href="#section-2.7.4">Section 2.7.4</a>) of zero.  This prevents servers from creating
+   the streams necessary to push resources.
+
+   Clients receiving a pushed response MUST validate that the server is
+   authorized to push the resource using the same-origin policy
+   ([<a href="./rfcmarkup?rfc=6454" title='"The Web Origin Concept"'>RFC6454</a>]).  For example, a SPDY connection to "example.com" is
+   generally [[anchor24: Ed: weaselly use of "generally", needs better
+   definition]] not permitted to push a response for "www.example.org".
+
+   A client that accepts pushed resources caches those resources as
+   though they were responses to GET requests.
+
+   Pushing of resources avoids the round-trip delay, but also creates a
+   potential race where a server can be pushing content which a client
+   is in the process of requesting.  The PUSH_PROMISE frame reduces the
+   chances of this condition occurring, while retaining the performance
+   benefit.
+
+   Pushed responses are associated with a request at the SPDY framing
+   layer.  The PUSH_PROMISE is sent on the stream for the associated
+   request, which allows a receiver to correlate the pushed resource
+   with a request.  The pushed stream inherits all of the request header
+   fields from the associated stream with the exception of resource
+   identification header fields (":host", ":scheme", and ":path"), which
+   are provided as part of the PUSH_PROMISE frame.
+
+   Pushed resources always have an associated ":method" of "GET".  A
+   cache MUST store these inherited and implied request header fields
+   with the cached resource.
+
+<span class="h4"><a name="section-3.3.1">3.3.1</a>.  Server implementation</span>
+
+   NOTE(willchan): Resolve the MAX_CONCURRENT_STREAMS limit with HTTP2
+   which deletes the text in the paragraph below.  This section will not
+   be updated until we resolve that.
+
+   When the server intends to push a resource to the user-agent, it
+   promises that it will opens a new stream in the future (but not now)
+   by sending a PUSH_PROMISE frame.  The PUSH_PROMISE frame MUST include
+   an Associated-To-Stream-ID, Prmoised-Stream-ID, and MUST ensure that
+   headers for ":scheme", ":host", ":path" representing the URL for the
+   resource being pushed are either already present in the implied
+   headers context (i.e. the request headers), or it must override the
+   headers which do not match the pushed resource.  The ":path" MUST
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 40]</span>
+</pre><pre class='newpage'><a name="page-41" id="page-41" href="#page-41" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   always be different from the originally request resource.  The
+   stream-IDs represented in the Promised-Stream-ID field MUST NOT count
+   towards the MAX_CONCURRENT_STREAMS limit.  When the server is ready
+   to send the resource, it will send a HEADERS frame with the stream-ID
+   indicated by the Promised-Stream-ID sent in the PUSH_PROMISE frame
+   earlier.  As with any other HEADERS frame, subsequent headers may
+   follow in other HEADERS frames.  The purpose of the association is so
+   that the user-agent can differentiate which request induced the
+   pushed stream; without it, if the user-agent had two tabs open to the
+   same page, each pushing unique content under a fixed URL, the user-
+   agent would not be able to differentiate the requests.
+
+   The Associated-To-Stream-ID must be the ID of an existing, open
+   stream.  The reason for this restriction is to have a clear endpoint
+   for pushed content.  If the user-agent requested a resource on stream
+   11, the server replies on stream 11.  It can push any number of
+   additional streams to the client before sending a FLAG_FIN on stream
+   11.  However, once the originating stream is closed no further push
+   streams may be associated with it.  The pushed streams do not need to
+   be closed (FIN set) before the originating stream is closed, they
+   only need to be created before the originating stream closes.
+
+   To prevent a race condition with the client, the server must only use
+   the client certificate of the associated stream when pushing
+   resources.
+
+   It is illegal for a server to push a resource with the Associated-To-
+   Stream-ID of 0, or with a Slot that is not 0.
+
+   To minimize race conditions with the client, the HEADERS+PRIORITY for
+   the pushed resources MUST be sent prior to sending any content which
+   could allow the client to discover the pushed resource and request
+   it.
+
+   The server MUST only push resources which would have been returned
+   from a GET request.
+
+   Note: If the server does not have all of the Name/Value Response
+   headers available at the time it issues the HEADERS frame for the
+   pushed resource, it may later use an additional HEADERS frame to
+   augment the name/value pairs to be associated with the pushed stream.
+   The subsequent HEADERS frame(s) must not contain a header for
+   ':host', ':scheme', or ':path' (e.g. the server can't change the
+   identity of the resource to be pushed).  The HEADERS frame must not
+   contain duplicate headers with a previously sent HEADERS frame.  The
+   server must send a HEADERS frame including the scheme/host/port
+   headers before sending any data frames on the stream.
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 41]</span>
+</pre><pre class='newpage'><a name="page-42" id="page-42" href="#page-42" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h4"><a name="section-3.3.2">3.3.2</a>.  Client implementation</span>
+
+   When fetching a resource the client has 3 possibilities:
+
+   1.  the resource is not being pushed
+
+   2.  the resource is being pushed, but the data has not yet arrived
+
+   3.  the resource is being pushed, and the data has started to arrive
+
+   A client SHOULD NOT issue GET requests for a resource that has been
+   promised.  A client is instead advised to wait for the pushed
+   resource to arrive.
+
+   When a client receives a PUSH_PROMISE frame from the server without
+   the ":host", ":scheme", and ":path" header fields, it MUST treat this
+   as a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type PROTOCOL_ERROR.
+
+   To cancel individual server push streams, the client can issue a
+   stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type CANCEL.  After receiving a
+   PUSH_PROMISE frame, the client is able to cancel the pushed resource
+   before receiving any frames on the promised stream.  The server
+   ceases transmission of the pushed resource; if the server has not
+   commenced transmission, it does not start.
+
+   To cancel all server push streams related to a request, the client
+   may issue a stream error (<a href="#section-2.5.2">Section 2.5.2</a>) of type CANCEL on the
+   associated-stream-id.  By cancelling that stream, the server MUST
+   immediately stop sending frames for any streams with
+   in-association-to for the original stream. [[anchor27: Ed: Triggering
+   side-effects on stream reset is going to be problematic for the
+   framing layer.  Purely from a design perspective, it's a layering
+   violation.  More practically speaking, the base request stream might
+   already be removed.  Special handling logic would be required.]]
+
+   A client can choose to time out pushed streams if the server does not
+   provide the resource in a timely fashion.  A stream error
+   (<a href="#section-2.5.2">Section 2.5.2</a>) of type CANCEL can be used to stop a timed out push.
+
+   If the server sends a HEADERS frame containing header fields that
+   duplicate values on a previous HEADERS or PUSH_PROMISE frames on the
+   same stream, the client MUST treat this as a stream error
+   (<a href="#section-2.5.2">Section 2.5.2</a>) of type PROTOCOL_ERROR.
+
+   If the server sends a HEADERS frame after sending a data frame for
+   the same stream, the client MAY ignore the HEADERS frame.  Ignoring
+   the HEADERS frame after a data frame prevents handling of HTTP's
+   trailing header fields ([<a href="#ref-HTTP-p1" title='"Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing"'>HTTP-p1</a>]).
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 42]</span>
+</pre><pre class='newpage'><a name="page-43" id="page-43" href="#page-43" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h2"><a name="section-4">4</a>.  WebSocket Layering over SPDY</span>
+
+   With this layering, a client and sever can share one connection for
+   both of HTTP requests and WebSockets.
+
+<span class="h3"><a name="section-4.1">4.1</a>.  Connection Management</span>
+
+<span class="h4"><a name="section-4.1.1">4.1.1</a>.  Opening Handshake</span>
+
+<span class="h5"><a name="section-4.1.1.1">4.1.1.1</a>.  Handshake Request</span>
+
+   The client initiates an opening handshake by sending a HEADERS+
+   PRIORITY frame.  The HEADERS+PRIORITY frame MUST NOT set the FLAG_FIN
+   because WebSocket intends to establish a bi-directional communication
+   port and to send arbitrary data after success in opening handshake.
+
+   The HEADERS+PRIORITY Name/Value section will contain all of the
+   following headers which are associated with The WebSocket protocol
+   [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>] opening handshake.  Upgrade, Connection, Sec-WebSocket-Key,
+   and Sec-WebSocket-Version headers MUST NOT be included because we do
+   not have to take care of protocol upgrading or verification over
+   HTTP.
+
+   The following name/value pairs MUST be present in every request:
+
+      ":path" - /resource name/ as used in the "Client Requirements"
+      section of the WebSocket protocol specification.  (See <a href="./rfcmarkup?rfc=6455">RFC6455</a>
+      [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+      ":host" - /host:port/ (e.g. "www.google.com:1234") as used in the
+      "Client Requirements" section of the WebSocket protocol
+      specification.  (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+      ":version" - the WebSocket protocol version of this request.
+      (MUST be "WebSocket/8", "WebSocket/13", or so.  The number MUST be
+      matched with the Sec-WebSocket-Version header.  See <a href="./rfcmarkup?rfc=6455">RFC6455</a>
+      [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+      ":scheme" - the scheme portion of the URI.  (MUST be "ws" or
+      "wss".  See also /secure/ flag in <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+      ":origin" - /origin/ as used in the "Client Requirements" section
+      of the WebSocket protocol specification.  (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+   In addition, the following OPTIONAL name/value pairs MAY be present:
+
+      ":sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
+      <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 43]</span>
+</pre><pre class='newpage'><a name="page-44" id="page-44" href="#page-44" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+      ":sec-websocket-extensions" - the Sec-WebSocket-Extensions header
+      (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+   Also, other HTTP compatible header name/value pairs MAY be present.
+   All header keys MUST be lowercase.
+
+<span class="h5"><a name="section-4.1.1.2">4.1.1.2</a>.  Handshake Response</span>
+
+   The server responds to a client request with a HEADERS frame.  If the
+   server intends to allow the client connection, HEADERS frame MUST NOT
+   set the FLAG_FIN and MUST have ":status" containing "101".  But, an
+   unsuccessful response MUST set the FLAG_FIN and MUST have ":status"
+   containing non-"101" code.  The server MAY fail the opening handshake
+   because of an unexpected header value or a missing mandatory header
+   name.
+
+   The client MAY send some data to the server before receiving the
+   successful response.  The server MUST ignore this data when opening
+   handshake fails.  After sending successful response, the server can
+   send arbitrary data frames at any time.
+
+   The response status line is unfolded into name/value pairs like other
+   WebSocket headers and MUST be present:
+
+      ":status" - The WebSocket or fallback HTTP response status code
+      (e.g. "101" or "101 Switching Protocols".  See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+   In addition, the following OPTIONAL name/value pairs MAY be present:
+
+      ":sec-websocket-protocol" - the Sec-WebSocket-Protocol header (See
+      <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+      ":sec-websocket-extensions" - the Sec-WebSocket-Extensions header
+      (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+   Also, other HTTP compatible header name/value pairs MAY be present.
+   All header names MUST be lowercase.  The successful server response
+   MUST have ":status" containing "101".
+
+   If the handshake fails, the client MUST send a SPDY data frame with
+   empty data field to avoid abnormal SPDY connection termination.  The
+   SPDY data frame MUST set the FLAG_FIN to indicate the client intends
+   to send no further data on this stream.
+
+<span class="h4"><a name="section-4.1.2">4.1.2</a>.  Closing Handshake</span>
+
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 44]</span>
+</pre><pre class='newpage'><a name="page-45" id="page-45" href="#page-45" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h5"><a name="section-4.1.2.1">4.1.2.1</a>.  Normal Termination</span>
+
+   In normal termination, WebSocket connection close frame <a href="./rfcmarkup?rfc=6455">RFC6455</a>
+   [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>] will be sent as a SPDY data frame with FLAG_FIN set.  The
+   closing handshake is based on WebSocket protocol specification.  Both
+   of a server and a client will initiate it then the other end MUST
+   respond it by connection close frame with FLAG_FIN set.
+
+<span class="h5"><a name="section-4.1.2.2">4.1.2.2</a>.  Abnormal Termination and CloseEvent Handling</span>
+
+   In abnormal termination, RST_STREAM SHOULD be handled as connection
+   close frame.  It means that JavaScript API provides CloseEvent (See,
+   The WebSocket API [<a href="#ref-WEBSOCKETAPI" title='"The WebSocket API"'>WEBSOCKETAPI</a>]) when a client receives RST_STREAM.
+   Its code field SHOULD be 1006 (Abnormal Closure).  The GOAWAY control
+   frame with non-zero status code SHOULD be also handled in the same
+   way.  The status code of RST_STREAM and GOAWAY frames SHOULD be
+   encoded to UTF-8 string with its frame type for its reason field.
+   (e.g.  "SPDY/3 RST_STREAM (5)" or "SPDY/3 GOAWAY (1)")
+
+   If a server works as protocol bridge to the WebSocket protocol, it
+   MAY send a close frame which contains the above status code and the
+   above reason to a backend WebSocket server.
+
+<span class="h3"><a name="section-4.2">4.2</a>.  Bi-directional Communication</span>
+
+   After the opening handshake, the client and the server can send
+   arbitrary WebSocket control and data frames.  Continuation frame,
+   text frame, binary frame, connection close frame, ping frame, and
+   pong frame are valid WebSocket frames.  These WebSocket frames are
+   mapped into each SPDY HEADERS frame and DATA frames as follow.
+
+<span class="h4"><a name="section-4.2.1">4.2.1</a>.  Frame mapping</span>
+
+   One WebSocket frame is mapped into one proceeding SPDY HEADERS frame
+   and following plural SPDY data frames.  The SPDY HEADERS frame must
+   contain WebSocket frame fields and following SPDY data frames contain
+   payload data.  These data frames are free to be reframed.
+
+   This plan doesn't care about overheads.  But HEADERS frame are
+   compressed by shared dictionary with other HEADERS+PRIORITY, HEADERS,
+   and other PUSH_PROMISE frames in the same SPDY connection.
+   Optimistically, it reduces framing overheads.
+
+   The following name/value pairs MUST be present in SPDY HEADERS
+   frames:
+
+      ":opcode" - The WebSocket frame opcode (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 45]</span>
+</pre><pre class='newpage'><a name="page-46" id="page-46" href="#page-46" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+      ":length" - The WebSocket frame payload length in decimal (See
+      <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+      ":fin" - The WebSocket frame fin (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>])
+
+   In addition, the following OPTIONAL name/value pairs MAY be present:
+
+      ":rsv1" - The WebSocket frame rsv1
+
+      ":rsv2" - The WebSocket frame rsv2
+
+      ":rsv3" - The WebSocket frame rsv3 (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>]).  These
+      values must contain "0" or "1".  When a key doesn't exist, the
+      value is considered to be "0".  Thus, ony enabled bits may appear
+      here.
+
+      ":masking-key" - The WebSocket frame masking-key (See <a href="./rfcmarkup?rfc=6455">RFC6455</a>
+      [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>]) in hexadecimal (e.g. "deadbeaf").  When this key/value
+      exist, the WebSocket frame mask (See <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>]) is
+      considered to be 1 and following payload data MUST be masked(See
+      <a href="./rfcmarkup?rfc=6455">RFC6455</a> [<a href="./rfcmarkup?rfc=6455" title='"The WebSocket Protocol"'>RFC6455</a>]), otherwise the WebSocket frame mask is
+      considered to be 0.
+
+<span class="h2"><a name="section-5">5</a>.  Design Rationale and Notes</span>
+
+   Authors' notes: The notes in this section have no bearing on the SPDY
+   protocol as specified within this document, and none of these notes
+   should be considered authoritative about how the protocol works.
+   However, these notes may prove useful in future debates about how to
+   resolve protocol ambiguities or how to evolve the protocol going
+   forward.  They may be removed before the final draft.
+
+<span class="h3"><a name="section-5.1">5.1</a>.  Separation of Framing Layer and Application Layer</span>
+
+   Readers may note that this specification sometimes blends the framing
+   layer (<a href="#section-2">Section 2</a>) with requirements of a specific application - HTTP
+   (<a href="#section-3">Section 3</a>).  This is reflected in the request/response nature of the
+   streams, the definition of the HEADERS and compression contexts which
+   are very similar to HTTP, and other areas as well.
+
+   This blending is intentional - the primary goal of this protocol is
+   to create a low-latency protocol for use with HTTP.  Isolating the
+   two layers is convenient for description of the protocol and how it
+   relates to existing HTTP implementations.  However, the ability to
+   reuse the SPDY framing layer is a non goal.
+
+
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 46]</span>
+</pre><pre class='newpage'><a name="page-47" id="page-47" href="#page-47" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h3"><a name="section-5.2">5.2</a>.  Error handling - Framing Layer</span>
+
+   Error handling at the SPDY layer splits errors into two groups: Those
+   that affect an individual SPDY stream, and those that do not.
+
+   When an error is confined to a single stream, but general framing is
+   in tact, SPDY attempts to use the RST_STREAM as a mechanism to
+   invalidate the stream but move forward without aborting the
+   connection altogether.
+
+   For errors occuring outside of a single stream context, SPDY assumes
+   the entire connection is hosed.  In this case, the endpoint detecting
+   the error should initiate a connection close.
+
+<span class="h3"><a name="section-5.3">5.3</a>.  One Connection Per Domain</span>
+
+   SPDY attempts to use fewer connections than other protocols have
+   traditionally used.  The rationale for this behavior is because it is
+   very difficult to provide a consistent level of service (e.g.  TCP
+   slow-start), prioritization, or optimal compression when the client
+   is connecting to the server through multiple channels.
+
+   Through lab measurements, we have seen consistent latency benefits by
+   using fewer connections from the client.  The overall number of
+   packets sent by SPDY can be as much as 40% less than HTTP.  Handling
+   large numbers of concurrent connections on the server also does
+   become a scalability problem, and SPDY reduces this load.
+
+   The use of multiple connections is not without benefit, however.
+   Because SPDY multiplexes multiple, independent streams onto a single
+   stream, it creates a potential for head-of-line blocking problems at
+   the transport level.  In tests so far, the negative effects of head-
+   of-line blocking (especially in the presence of packet loss) is
+   outweighed by the benefits of compression and prioritization.
+
+<span class="h3"><a name="section-5.4">5.4</a>.  Fixed vs Variable Length Fields</span>
+
+   SPDY favors use of fixed length 32bit fields in cases where smaller,
+   variable length encodings could have been used.  To some, this seems
+   like a tragic waste of bandwidth.  SPDY choses the simple encoding
+   for speed and simplicity.
+
+   The goal of SPDY is to reduce latency on the network.  The overhead
+   of SPDY frames is generally quite low.  Each data frame is only an 8
+   byte overhead for a 1452 byte payload (~0.6%).  At the time of this
+   writing, bandwidth is already plentiful, and there is a strong trend
+   indicating that bandwidth will continue to increase.  With an average
+   worldwide bandwidth of 1Mbps, and assuming that a variable length
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 47]</span>
+</pre><pre class='newpage'><a name="page-48" id="page-48" href="#page-48" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   encoding could reduce the overhead by 50%, the latency saved by using
+   a variable length encoding would be less than 100 nanoseconds.  More
+   interesting are the effects when the larger encodings force a packet
+   boundary, in which case a round-trip could be induced.  However, by
+   addressing other aspects of SPDY and TCP interactions, we believe
+   this is completely mitigated.
+
+<span class="h3"><a name="section-5.5">5.5</a>.  Compression Context(s)</span>
+
+   When isolating the compression contexts used for communicating with
+   multiple origins, we had a few choices to make.  We could have
+   maintained a map (or list) of compression contexts usable for each
+   origin.  The basic case is easy - each HEADERS frame would need to
+   identify the context to use for that frame.  However, compression
+   contexts are not cheap, so the lifecycle of each context would need
+   to be bounded.  For proxy servers, where we could churn through many
+   contexts, this would be a concern.  We considered using a static set
+   of contexts, say 16 of them, which would bound the memory use.  We
+   also considered dynamic contexts, which could be created on the fly,
+   and would need to be subsequently destroyed.  All of these are
+   complicated, and ultimately we decided that such a mechanism creates
+   too many problems to solve.
+
+   Alternatively, we've chosen the simple approach, which is to simply
+   provide a flag for resetting the compression context.  For the common
+   case (no proxy), this fine because most requests are to the same
+   origin and we never need to reset the context.  For cases where we
+   are using two different origins over a single SPDY connection, we
+   simply reset the compression state between each transition.
+
+<span class="h3"><a name="section-5.6">5.6</a>.  Unidirectional streams</span>
+
+   Besides providing a clear endpoint for unidirectional streams,
+   Associated-To-Stream-ID also avoids the recipient of pushed streams
+   from needing to send a set of empty frames (e.g. the HEADERS+PRIORITY
+   w/ FLAG_FIN) to signal that it doesn't wish to send data on the
+   stream.
+
+<span class="h3"><a name="section-5.7">5.7</a>.  Data Compression</span>
+
+   Generic compression of data portion of the streams (as opposed to
+   compression of the headers) without knowing the content of the stream
+   is redundant.  There is no value in compressing a stream which is
+   already compressed.  Because of this, SPDY initially allowed data
+   compression to be optional.  We included it because study of existing
+   websites shows that many sites are not using compression as they
+   should, and users suffer because of it.  We wanted a mechanism where,
+   at the SPDY layer, site administrators could simply force compression
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 48]</span>
+</pre><pre class='newpage'><a name="page-49" id="page-49" href="#page-49" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   - it is better to compress twice than to not compress.
+
+   Overall, however, with this feature being optional and sometimes
+   redundant, it was unclear if it was useful at all.  We removed it
+   from the specification.
+
+<span class="h3"><a name="section-5.8">5.8</a>.  Server Push</span>
+
+   A subtle but important point is that server push streams must be
+   declared before the associated stream is closed.  The reason for this
+   is so that proxies have a lifetime for which they can discard
+   information about previous streams.  If a pushed stream could
+   associate itself with an already-closed stream, then endpoints would
+   not have a specific lifecycle for when they could disavow knowledge
+   of the streams which went before.
+
+<span class="h2"><a name="section-6">6</a>.  Security Considerations</span>
+
+<span class="h3"><a name="section-6.1">6.1</a>.  Use of Same-origin constraints</span>
+
+   This specification uses the same-origin policy [<a href="./rfcmarkup?rfc=6454" title='"The Web Origin Concept"'>RFC6454</a>] in all cases
+   where verification of content is required.
+
+<span class="h3"><a name="section-6.2">6.2</a>.  HTTP Headers and SPDY Headers</span>
+
+   At the application level, HTTP uses name/value pairs in its headers.
+   Because SPDY merges the existing HTTP headers with SPDY headers,
+   there is a possibility that some HTTP applications already use a
+   particular header name.  To avoid any conflicts, all headers
+   introduced for layering HTTP over SPDY are prefixed with ":". ":" is
+   not a valid sequence in HTTP header naming, preventing any possible
+   conflict.
+
+<span class="h3"><a name="section-6.3">6.3</a>.  Cross-Protocol Attacks</span>
+
+   By utilizing TLS, we believe that SPDY introduces no new cross-
+   protocol attacks.  TLS encrypts the contents of all transmission
+   (except the handshake itself), making it difficult for attackers to
+   control the data which could be used in a cross-protocol attack.
+
+<span class="h3"><a name="section-6.4">6.4</a>.  Server Push Implicit Headers</span>
+
+   Pushed resources do not have an associated request.  In order for
+   existing HTTP cache control validations (such as the Vary header) to
+   work, however, all cached resources must have a set of request
+   headers.  For this reason, browsers MUST be careful to inherit
+   request headers from the associated stream for the push.  This
+   includes the 'Cookie' header.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 49]</span>
+</pre><pre class='newpage'><a name="page-50" id="page-50" href="#page-50" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h2"><a name="section-7">7</a>.  Privacy Considerations</span>
+
+<span class="h3"><a name="section-7.1">7.1</a>.  Long Lived Connections</span>
+
+   SPDY aims to keep connections open longer between clients and servers
+   in order to reduce the latency when a user makes a request.  The
+   maintenance of these connections over time could be used to expose
+   private information.  For example, a user using a browser hours after
+   the previous user stopped using that browser may be able to learn
+   about what the previous user was doing.  This is a problem with HTTP
+   in its current form as well, however the short lived connections make
+   it less of a risk.
+
+<span class="h3"><a name="section-7.2">7.2</a>.  SETTINGS frame</span>
+
+   The SPDY SETTINGS frame allows servers to store out-of-band
+   transmitted information about the communication between client and
+   server on the client.  Although this is intended only to be used to
+   reduce latency, renegade servers could use it as a mechanism to store
+   identifying information about the client in future requests.
+
+   Clients implementing privacy modes, such as Google Chrome's
+   "incognito mode", may wish to disable client-persisted SETTINGS
+   storage.
+
+   Clients MUST clear persisted SETTINGS information when clearing the
+   cookies.
+
+   TODO: Put range maximums on each type of setting to limit
+   inappropriate uses.
+
+<span class="h2"><a name="section-8">8</a>.  Sub-protocol negotiation</span>
+
+<span class="h3"><a name="section-8.1">8.1</a>.  Supporting scheme negotiation using SETTINGS frame</span>
+
+   By default, a client can send HEADERS+PRIORITY frames on http and
+   https schemes, but if it want to send them on other schemes, it MUST
+   wait for a server sending SETTINGS frame which specify declaring
+   schemes.  Thus, a server SHOULD send a SETTINGS frame as soon as
+   possible whether it supports other schemes or not.
+
+<span class="h2"><a name="section-9">9</a>.  Incompatibilities with SPDY draft #3</span>
+
+   Here is a list of the major changes between this draft #3 and this
+   draft
+
+      DONE: Different, more precise, notation style used to describe all
+      frames.
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 50]</span>
+</pre><pre class='newpage'><a name="page-51" id="page-51" href="#page-51" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+      DONE: Downsizing various fields in all messages... this will
+      definitely need debate
+
+      DONE: Removal of Version field from all messages.
+
+      DONE: Reordered fields in all messages.  All messages now share a
+      common header of: length, flags, control-bit, 31-bit-payload.  All
+      control frames include an 8th byte, which is the opcode.
+
+      DONE: Addition of end-of-message delimiter flag in data frames
+
+      DONE: Modification of server push; addition of PUSH_PROMISE frame
+      add a push frame, removed the 'associated-stream-id' field from
+      SYN frame
+
+      ONGOING: Significant modifications to how headers are transported.
+      This involved changes to all frames incorporating HEADER blocks,
+      and changes to the HEADER blocks themselves.
+
+      ONGOING: Different header compression technique which uses less
+      CPU for proxies and which should result in competitive compression
+
+      TODO: Addition of end-of-header-section delimiter flag in any
+      frame which has a header block
+
+      ONGOING: Definition of cert-data push
+
+      ONGOING: Definition of name-resolution push
+
+      ONGOING: Redefining prioritization
+
+      TODO: Modification of flow-control; allow two-levels of flow
+      control so as to allow greater stream concurrency safely
+
+      TODO: Add the 'blocked-on-flow-control' notification.  Experience
+      has shown that limits are too easy to get wrong, and this helps to
+      self-correct this problem
+
+      TODO: Modification of flow-control; headers-blocks (thus syn-
+      stream) gets its own pool of memory, separate from data frames
+
+      TODO: Everything after the first header-block-section possibly
+      treated as flow-control
+
+      TODO: Connection-error status code added for UNRECOGNIZED_SCHEME
+      for new streams.  This triggers when the recipient doesn't know
+      how to handle a stream of that type.
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 51]</span>
+</pre><pre class='newpage'><a name="page-52" id="page-52" href="#page-52" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+<span class="h2"><a name="section-10">10</a>.  Requirements Notation</span>
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in <a href="./rfcmarkup?rfc=2119">RFC 2119</a> [<a href="./rfcmarkup?rfc=2119" title='"Key words for use in RFCs to Indicate Requirement Levels"'>RFC2119</a>].
+
+<span class="h2"><a name="section-11">11</a>.  Acknowledgements</span>
+
+   Many individuals have contributed to the design and evolution of
+   SPDY: Adam Langley, Wan-Teh Chang, Jim Morrison, Mark Nottingham,
+   Alyssa Wilk, Costin Manolache, William Chan, Vitaliy Lvin, Joe Chan,
+   Adam Barth, Ryan Hamilton, Gavin Peters, Kent Alstad, Kevin Lindsay,
+   Paul Amer, Fan Yang, Jonathan Leighton, Alex Strom
+
+<span class="h2"><a name="section-12">12</a>.  References</span>
+
+<span class="h3"><a name="section-12.1">12.1</a>.  Normative References</span>
+
+   [<a name="ref-ASCII" id="ref-ASCII">ASCII</a>]            "US-ASCII. Coded Character Set - 7-Bit American
+                      Standard Code for Information Interchange.
+                      Standard ANSI X3.4-1986, ANSI, 1986.".
+
+   [<a name="ref-HTTP-p1" id="ref-HTTP-p1">HTTP-p1</a>]          Fielding, R. and J. Reschke, "Hypertext Transfer
+                      Protocol (HTTP/1.1): Message Syntax and Routing",
+                      <a href="./rfcmarkup?draft=draft-ietf-httpbis-p1-messaging-22">draft-ietf-httpbis-p1-messaging-22</a> (work in
+                      progress), February 2013.
+
+   [<a name="ref-HTTP-p2" id="ref-HTTP-p2">HTTP-p2</a>]          Fielding, R. and J. Reschke, "Hypertext Transfer
+                      Protocol (HTTP/1.1): Semantics and Content",
+                      <a href="./rfcmarkup?draft=draft-ietf-httpbis-p2-semantics-22">draft-ietf-httpbis-p2-semantics-22</a> (work in
+                      progress), February 2013.
+
+   [<a name="ref-HTTP-p4" id="ref-HTTP-p4">HTTP-p4</a>]          Fielding, R., Ed. and J. Reschke, Ed., "Hypertext
+                      Transfer Protocol (HTTP/1.1): Conditional
+                      Requests", <a href="./rfcmarkup?draft=draft-ietf-httpbis-p4-conditional-22">draft-ietf-httpbis-p4-conditional-22</a>
+                      (work in progress), February 2013.
+
+   [<a name="ref-HTTP-p5" id="ref-HTTP-p5">HTTP-p5</a>]          Fielding, R., Ed., Lafon, Y., Ed., and J. Reschke,
+                      Ed., "Hypertext Transfer Protocol (HTTP/1.1):
+                      Range Requests", <a href="./rfcmarkup?draft=draft-ietf-httpbis-p5-range-22">draft-ietf-httpbis-p5-range-22</a>
+                      (work in progress), February 2013.
+
+   [<a name="ref-HTTP-p6" id="ref-HTTP-p6">HTTP-p6</a>]          Fielding, R., Ed., Nottingham, M., Ed., and J.
+                      Reschke, Ed., "Hypertext Transfer Protocol
+                      (HTTP/1.1): Caching",
+                      <a href="./rfcmarkup?draft=draft-ietf-httpbis-p6-cache-22">draft-ietf-httpbis-p6-cache-22</a> (work in progress),
+                      February 2013.
+
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 52]</span>
+</pre><pre class='newpage'><a name="page-53" id="page-53" href="#page-53" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+   [<a name="ref-HTTP-p7" id="ref-HTTP-p7">HTTP-p7</a>]          Fielding, R., Ed. and J. Reschke, Ed., "Hypertext
+                      Transfer Protocol (HTTP/1.1): Authentication",
+                      <a href="./rfcmarkup?draft=draft-ietf-httpbis-p7-auth-22">draft-ietf-httpbis-p7-auth-22</a> (work in progress),
+                      February 2013.
+
+   [<a name="ref-RFC0793" id="ref-RFC0793">RFC0793</a>]          Postel, J., "Transmission Control Protocol",
+                      STD 7, <a href="./rfcmarkup?rfc=793">RFC 793</a>, September 1981.
+
+   [<a name="ref-RFC1950" id="ref-RFC1950">RFC1950</a>]          Deutsch, L. and J-L. Gailly, "ZLIB Compressed Data
+                      Format Specification version 3.3", <a href="./rfcmarkup?rfc=1950">RFC 1950</a>,
+                      May 1996.
+
+   [<a name="ref-RFC2119" id="ref-RFC2119">RFC2119</a>]          Bradner, S., "Key words for use in RFCs to
+                      Indicate Requirement Levels", <a href="./rfcmarkup?bcp=14">BCP 14</a>, <a href="./rfcmarkup?rfc=2119">RFC 2119</a>,
+                      March 1997.
+
+   [<a name="ref-RFC2617" id="ref-RFC2617">RFC2617</a>]          Franks, J., Hallam-Baker, P., Hostetler, J.,
+                      Lawrence, S., Leach, P., Luotonen, A., and L.
+                      Stewart, "HTTP Authentication: Basic and Digest
+                      Access Authentication", <a href="./rfcmarkup?rfc=2617">RFC 2617</a>, June 1999.
+
+   [<a name="ref-RFC3986" id="ref-RFC3986">RFC3986</a>]          Berners-Lee, T., Fielding, R., and L. Masinter,
+                      "Uniform Resource Identifier (URI): Generic
+                      Syntax", STD 66, <a href="./rfcmarkup?rfc=3986">RFC 3986</a>, January 2005.
+
+   [<a name="ref-RFC4366" id="ref-RFC4366">RFC4366</a>]          Blake-Wilson, S., Nystrom, M., Hopwood, D.,
+                      Mikkelsen, J., and T. Wright, "Transport Layer
+                      Security (TLS) Extensions", <a href="./rfcmarkup?rfc=4366">RFC 4366</a>, April 2006.
+
+   [<a name="ref-RFC4559" id="ref-RFC4559">RFC4559</a>]          Jaganathan, K., Zhu, L., and J. Brezak, "SPNEGO-
+                      based Kerberos and NTLM HTTP Authentication in
+                      Microsoft Windows", <a href="./rfcmarkup?rfc=4559">RFC 4559</a>, June 2006.
+
+   [<a name="ref-RFC5246" id="ref-RFC5246">RFC5246</a>]          Dierks, T. and E. Rescorla, "The Transport Layer
+                      Security (TLS) Protocol Version 1.2", <a href="./rfcmarkup?rfc=5246">RFC 5246</a>,
+                      August 2008.
+
+   [<a name="ref-RFC6454" id="ref-RFC6454">RFC6454</a>]          Barth, A., "The Web Origin Concept", <a href="./rfcmarkup?rfc=6454">RFC 6454</a>,
+                      December 2011.
+
+   [<a name="ref-RFC6455" id="ref-RFC6455">RFC6455</a>]          Fette, I. and A. Melnikov, "The WebSocket
+                      Protocol", <a href="./rfcmarkup?rfc=6455">RFC 6455</a>, December 2011.
+
+   [<a name="ref-TLSNPN" id="ref-TLSNPN">TLSNPN</a>]           Langley, A., "TLS Next Protocol Negotiation", &lt;htt
+                      p://tools.ietf.org/html/
+                      <a href="./rfcmarkup?draft=draft-agl-tls-nextprotoneg-01">draft-agl-tls-nextprotoneg-01</a>&gt;.
+
+   [<a name="ref-UDELCOMPRESSION" id="ref-UDELCOMPRESSION">UDELCOMPRESSION</a>]  Yang, F., Amer, P., and J. Leighton, "A
+
+
+
+<span class="grey">Belshe &amp; Peon           Expires December 6, 2013               [Page 53]</span>
+</pre><pre class='newpage'><a name="page-54" id="page-54" href="#page-54" class="invisible"> </a>
+<span class="grey">Internet-Draft                    SPDY                         June 2013</span>
+
+
+                      Methodology to Derive SPDY's Initial Dictionary
+                      for Zlib Compression", &lt;<a href="http://www.eecis.udel.edu/~amer/PEL/poc/pdf/SPDY-Fan.pdf">http://www.eecis.udel.edu/</a>
+                      <a href="http://www.eecis.udel.edu/~amer/PEL/poc/pdf/SPDY-Fan.pdf">~amer/PEL/poc/pdf/SPDY-Fan.pdf</a>&gt;.
+
+   [<a name="ref-WEBSOCKETAPI" id="ref-WEBSOCKETAPI">WEBSOCKETAPI</a>]     Hickson, I., "The WebSocket API",
+                      &lt;<a href="http://www.w3.org/TR/websockets/">http://www.w3.org/TR/websockets/</a>&gt;.
+
+<span class="h3"><a name="section-12.2">12.2</a>.  Informative References</span>
+
+   [<a name="ref-TALKING" id="ref-TALKING">TALKING</a>]          Huang, L-S., Chen, E., Barth, A., Rescorla, E.,
+                      and C. Jackson, "Talking to Yourself for Fun and
+                      Profit", 2011,
+                      &lt;<a href="http://w2spconf.com/2011/papers/websocket.pdf">http://w2spconf.com/2011/papers/websocket.pdf</a>&gt;.
+
+URIs
+
+   [<a name="ref-1" id="ref-1">1</a>]  &lt;<a href="https://github.com/http2/http2-spec/issues/28">https://github.com/http2/http2-spec/issues/28</a>&gt;
+
+   [<a name="ref-2" id="ref-2">2</a>]  &lt;<a href="https://github.com/http2/http2-spec/issues/46">https://github.com/http2/http2-spec/issues/46</a>&gt;
+
+<span class="h2"><a name="appendix-A">Appendix A</a>.  Changes</span>
+
+   To be removed by RFC Editor before publication
+
+Authors' Addresses
+
+   Mike Belshe
+   Twist
+
+   EMail: mbelshe@chromium.org
+
+
+   Roberto Peon
+   Google, Inc
+
+   EMail: fenix@google.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Belshe &amp; Peon           Expires December 6, 2013               [Page 54]
+</pre><pre class='newpage'>
 
 </pre><br />
 <span class="noprint"><small><small>Html markup produced by rfcmarkup 1.90, available from
